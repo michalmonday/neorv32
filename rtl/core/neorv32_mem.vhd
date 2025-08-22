@@ -63,6 +63,9 @@ architecture neorv32_mem_rtl of neorv32_mem is
   -- addr to keep reference to the address when rdata was assigned
   --signal addr_copy      : std_ulogic_vector(addr_hi_c downto 0) := (others => '0'); 
   signal addr_copy_32bit      : std_ulogic_vector(31 downto 0) := (others => '0'); 
+  signal addr_copy_32bit_delayed      : std_ulogic_vector(31 downto 0) := (others => '0'); 
+  signal isr_begin_decryption : std_ulogic := '1';
+  signal isr_block_i : std_ulogic_vector(127 downto 0) := (others => '0');
 begin
 
   -- Sanity Checks --------------------------------------------------------------------------
@@ -82,7 +85,9 @@ begin
       if rising_edge(clk_i) then -- no reset to infer block-RAM
         if (bus_req_i.stb = '1') then
           rdata <= mem_rom_c(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
+          addr_copy_32bit <= bus_req_i.addr;
         end if;
+        addr_copy_32bit_delayed <= addr_copy_32bit;
       end if;
     end process memory_core;
   end generate;
@@ -115,9 +120,10 @@ begin
             rdata(23 downto 16) <= mem_ram_b2(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
             rdata(31 downto 24) <= mem_ram_b3(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
             -- addr_copy <= bus_req_i.addr(addr_hi_c downto 2); -- keep the address for decryption
-            addr_copy_32bit <= bus_req_i.addr(31 downto 0); -- keep the address for decryption
+            addr_copy_32bit <= bus_req_i.addr; -- keep the address for decryption
           end if;
         end if;
+        addr_copy_32bit_delayed <= addr_copy_32bit;
       end if;
     end process memory_core;
   end generate;
@@ -173,14 +179,14 @@ begin
               instruction_set_randomisation_key => instruction_set_randomisation_key,
               i_instruction => dout,
               -- i_block => rom_output_block_for_ascon,
-              i_block => (others => '0'),
+              i_block => isr_block_i,
 
               -- begin_decryption should be set to 1 when the instruction is ready to be decrypted
               -- for simple XOR decryption (that uses combinational logic) it can always be 1 
               -- for ascon implementation, it should be set to 1 only when module is not already busy decrypting
-              -- begin_decryption => instruction_set_randimisation_begin_decryption, 
-              begin_decryption => '1', 
-              program_counter => addr_copy_32bit,
+              -- begin_decryption => instruction_set_randimisation_begin_decryption,
+              begin_decryption => isr_begin_decryption,
+              program_counter => addr_copy_32bit_delayed,
               o_instruction => dout_decrypted,
               -- decryption_done => instruction_set_randimisation_decryption_done -- if this is 0, then CPU should wait until the instruction is decrypted
               decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted

@@ -129,8 +129,9 @@ entity neorv32_vivado_ip is
     IO_SLINK_RX_FIFO      : natural range 1 to 2**15       := 1;
     IO_SLINK_TX_FIFO      : natural range 1 to 2**15       := 1;
     IO_TRACER_EN          : boolean                        := false;
-    IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1
+    IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1;
 
+    INSTRUCTION_SET_RANDOMISATION_EN : boolean := true    
   );
   port (
     -- ------------------------------------------------------------
@@ -255,7 +256,9 @@ entity neorv32_vivado_ip is
     -- CPU Interrupts --
     mtime_irq_i    : in  std_logic := '0';
     msw_irq_i      : in  std_logic := '0';
-    mext_irq_i     : in  std_logic := '0'
+    mext_irq_i     : in  std_logic := '0';
+
+    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) 
   );
 end entity;
 
@@ -458,7 +461,9 @@ begin
     IO_SLINK_RX_FIFO    => IO_SLINK_RX_FIFO,
     IO_SLINK_TX_FIFO    => IO_SLINK_TX_FIFO,
     IO_TRACER_EN        => IO_TRACER_EN,
-    IO_TRACER_BUFFER    => IO_TRACER_BUFFER
+    IO_TRACER_BUFFER    => IO_TRACER_BUFFER,
+
+    INSTRUCTION_SET_RANDOMISATION_EN => INSTRUCTION_SET_RANDOMISATION_EN
   )
   port map (
     -- Global control --
@@ -542,7 +547,9 @@ begin
     -- CPU Interrupts --
     mtime_irq_i    => std_ulogic(mtime_irq_i),
     msw_irq_i      => std_ulogic(msw_irq_i),
-    mext_irq_i     => std_ulogic(mext_irq_i)
+    mext_irq_i     => std_ulogic(mext_irq_i),
+
+    instruction_set_randomisation_key => instruction_set_randomisation_key
   );
 
 

@@ -10,9 +10,11 @@ Using USER_FLAGS from command line overrides completely the USER_FLAGS from make
 
 
 # Changes for instruction set randomisation
-* Created `neorv32_instruction_set_randomisation.vhd`.  
+* Created `neorv32_instruction_set_randomisation.vhd` and added it in the `rtl/file_list_soc.f`
 * Added `instruction_set_randomisation_key` port in `neorv32_top.vhd` and `neorv32_mem.vhd`.   
 * modified neorv32_mem (isr module is implemented inside it)    
 * removed "c" extension in compilation (coremark makefile)   
 * added ENCRYPT_BIN_MAIN option in `sw/common/common.mk` file  
 * created tools/encrypt_bin.py and `tools/key_file` (storing the key "AAAA" -> 0x41414141)  
+* `neorv32_top` module component had to be modified in `neorv32_package.vhd`
+* Added `rtl/isr_related` directory with some helper modules (`io_buf_for_i2c.vhd`, `shift_register.vhd`)

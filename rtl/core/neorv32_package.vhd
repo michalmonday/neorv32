@@ -893,7 +893,9 @@ package neorv32_package is
       IO_SLINK_TX_FIFO      : natural range 1 to 2**15       := 1;
       IO_TRACER_EN          : boolean                        := false;
       IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1;
-      IO_TRACER_SIMLOG_EN   : boolean                        := false
+      IO_TRACER_SIMLOG_EN   : boolean                        := false;
+
+      INSTRUCTION_SET_RANDOMISATION_EN : boolean := true
     );
     port (
       -- Global control --
@@ -977,7 +979,9 @@ package neorv32_package is
       -- CPU Interrupts --
       mtime_irq_i    : in  std_ulogic := 'L';
       msw_irq_i      : in  std_ulogic := 'L';
-      mext_irq_i     : in  std_ulogic := 'L'
+      mext_irq_i     : in  std_ulogic := 'L';
+
+      instruction_set_randomisation_key : in  std_ulogic_vector(127 downto 0) := (others => 'L')
     );
   end component;
 
