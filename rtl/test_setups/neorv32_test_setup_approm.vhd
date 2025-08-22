@@ -24,17 +24,17 @@ entity neorv32_test_setup_approm is
   );
   port (
     -- Global control --
-    clk_i  : in  std_ulogic; -- global clock, rising edge
-    rstn_i : in  std_ulogic; -- global reset, low-active, async
+    clk  : in  std_ulogic; -- global clock, rising edge
+    btnC : in  std_ulogic; -- global reset, low-active, async
     -- GPIO --
-    gpio_o : out std_ulogic_vector(7 downto 0) -- parallel output
+    led : out std_ulogic_vector(7 downto 0) -- parallel output
   );
 end entity;
 
 architecture neorv32_test_setup_approm_rtl of neorv32_test_setup_approm is
 
   signal con_gpio_out : std_ulogic_vector(31 downto 0);
-
+  signal btnC_n : std_ulogic;
 begin
 
   -- The Core Of The Problem ----------------------------------------------------------------
@@ -61,14 +61,14 @@ begin
   )
   port map (
     -- Global control --
-    clk_i  => clk_i,       -- global clock, rising edge
-    rstn_i => rstn_i,      -- global reset, low-active, async
+    clk_i  => clk,       -- global clock, rising edge
+    rstn_i => btnC_n,      -- global reset, low-active, async
     -- GPIO (available if IO_GPIO_NUM > 0) --
     gpio_o => con_gpio_out -- parallel output
   );
 
   -- GPIO output --
-  gpio_o <= con_gpio_out(7 downto 0);
-
+  led <= con_gpio_out(7 downto 0);
+  btnC_n <= not btnC;
 
 end architecture;

@@ -23,13 +23,16 @@ entity neorv32_mem is
   generic (
     MEM_SIZE  : natural; -- memory size in bytes, has to be a power of 2, min 4
     MEM_INIT  : boolean; -- implement memory as ROM, pre-initialized with application image
-    OUTREG_EN : boolean  -- add output register stage
+    OUTREG_EN : boolean;  -- add output register stage
+    INSTRUCTION_SET_RANDOMISATION_EN    : boolean := false -- enable instruction set randomisation
   );
   port (
     clk_i     : in  std_ulogic; -- global clock line
     rstn_i    : in  std_ulogic; -- async reset, low-active
     bus_req_i : in  bus_req_t;  -- bus request
-    bus_rsp_o : out bus_rsp_t   -- bus response
+    bus_rsp_o : out bus_rsp_t;  -- bus response
+
+    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := (others => '1')
   );
 end neorv32_mem;
 
@@ -55,6 +58,11 @@ architecture neorv32_mem_rtl of neorv32_mem is
   signal wack  : std_ulogic;
   signal rden  : std_ulogic_vector(1 downto 0);
 
+  -- for instruction set randomisation
+  signal dout_decrypted : std_ulogic_vector(31 downto 0);
+  -- addr to keep reference to the address when rdata was assigned
+  --signal addr_copy      : std_ulogic_vector(addr_hi_c downto 0) := (others => '0'); 
+  signal addr_copy_32bit      : std_ulogic_vector(31 downto 0) := (others => '0'); 
 begin
 
   -- Sanity Checks --------------------------------------------------------------------------
@@ -106,6 +114,8 @@ begin
             rdata(15 downto 8)  <= mem_ram_b1(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
             rdata(23 downto 16) <= mem_ram_b2(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
             rdata(31 downto 24) <= mem_ram_b3(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
+            -- addr_copy <= bus_req_i.addr(addr_hi_c downto 2); -- keep the address for decryption
+            addr_copy_32bit <= bus_req_i.addr(31 downto 0); -- keep the address for decryption
           end if;
         end if;
       end if;
@@ -137,7 +147,7 @@ begin
         dout <= rdata;
       end if;
     end process ram_outreg;
-    bus_rsp_o.data <= dout when (rden(1) = '1') else (others => '0'); -- output gate
+    bus_rsp_o.data <= dout_decrypted when (rden(1) = '1') else (others => '0'); -- output gate
     bus_rsp_o.err  <= '0'; -- no access error possible
     bus_rsp_o.ack  <= rden(1) when MEM_INIT else (rden(1) or wack); -- read-only?
   end generate;
@@ -146,10 +156,40 @@ begin
   output_register_disabled:
   if not OUTREG_EN generate
     dout           <= rdata;
-    bus_rsp_o.data <= dout when (rden(0) = '1') else (others => '0'); -- output gate
+    bus_rsp_o.data <= dout_decrypted when (rden(0) = '1') else (others => '0'); -- output gate
     bus_rsp_o.err  <= '0'; -- no access error possible
     bus_rsp_o.ack  <= rden(0) when MEM_INIT else (rden(0) or wack); -- read-only?
   end generate;
 
+  isr_enabled:
+  if INSTRUCTION_SET_RANDOMISATION_EN generate
+    instruction_set_randomisation_instance : entity neorv32.neorv32_instruction_set_randomisation
+      GENERIC MAP (
+          DECRYPTION_TYPE => XOR_DEC
+      )
+      PORT MAP (
+              clk => clk_i,
+              rst_n => rstn_i, -- not reset and not instruction_set_randomisation_reset,
+              instruction_set_randomisation_key => instruction_set_randomisation_key,
+              i_instruction => dout,
+              -- i_block => rom_output_block_for_ascon,
+              i_block => (others => '0'),
 
+              -- begin_decryption should be set to 1 when the instruction is ready to be decrypted
+              -- for simple XOR decryption (that uses combinational logic) it can always be 1 
+              -- for ascon implementation, it should be set to 1 only when module is not already busy decrypting
+              -- begin_decryption => instruction_set_randimisation_begin_decryption, 
+              begin_decryption => '1', 
+              program_counter => addr_copy_32bit,
+              o_instruction => dout_decrypted,
+              -- decryption_done => instruction_set_randimisation_decryption_done -- if this is 0, then CPU should wait until the instruction is decrypted
+              decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted
+          );
+  end generate;
+
+  isr_disabled:
+  if not INSTRUCTION_SET_RANDOMISATION_EN generate
+    dout_decrypted <= dout;
+  end generate;
+  
 end neorv32_mem_rtl;

@@ -131,6 +131,7 @@ main(int argc, char *argv[])
         ee_printf("list_head structure too big for comparable data!\n");
         return MAIN_RETURN_VAL;
     }
+    ee_printf("Coremark main entrance\n");
     results[0].seed1      = get_seed(1);
     results[0].seed2      = get_seed(2);
     results[0].seed3      = get_seed(3);

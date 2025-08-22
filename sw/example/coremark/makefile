@@ -2,13 +2,15 @@
 # Use this makefile to configure all relevant CPU / compiler options.
 
 # Override the default CPU ISA
-MARCH = rv32imc_zicsr_zifencei
+MARCH = rv32im_zicsr_zifencei
 
 # Override the default RISC-V GCC prefix
 #RISCV_PREFIX ?= riscv-none-elf-
 
 # Override default optimization goal
-EFFORT = -O3
+EFFORT = -O3 -Os
+
+USER_FLAGS += -DUART0_SIM_MODE
 
 # Add extended debug symbols
 USER_FLAGS += -ggdb -gdwarf-3
@@ -20,11 +22,11 @@ USER_FLAGS += \
 
 # Adjust processor DMEM size
 USER_FLAGS += \
--Wl,--defsym,__neorv32_ram_size=16k \
+-Wl,--defsym,__neorv32_ram_size=64k \
 -Wl,--defsym,__neorv32_ram_base=0x80000000
 
 # Adjust maximum heap size
-##USER_FLAGS += -Wl,--defsym,__neorv32_heap_size=8k
+USER_FLAGS += -Wl,--defsym,__neorv32_heap_size=8k
 
 # Additional sources
 APP_SRC += $(wildcard source/*.c)

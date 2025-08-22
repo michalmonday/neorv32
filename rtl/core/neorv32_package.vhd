@@ -981,6 +981,9 @@ package neorv32_package is
     );
   end component;
 
+  type isr_decryption_t is (NONE, ASCON_DEC, XOR_DEC);
+  -- type ascon_operation_t is (ASCON_OP_ENCRYPTION, ASCON_OP_DECRYPTION);
+
 end neorv32_package;
 
 package body neorv32_package is
@@ -1180,5 +1183,6 @@ package body neorv32_package is
     end loop;
     return res_v;
   end function print_hex_f;
+
 
 end neorv32_package;

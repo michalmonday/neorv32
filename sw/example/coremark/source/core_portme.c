@@ -221,6 +221,8 @@ void *portable_malloc(size_t size) {
     neorv32_uart0_printf("Malloc failed!\n");
     asm volatile ("ebreak");
     while(1);
+  } else {
+    neorv32_uart0_printf("Malloc succeeded! %X\n", pnt);
   }
   return pnt;
 }

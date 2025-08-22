@@ -23,7 +23,7 @@ entity neorv32_tb is
     DUAL_CORE_EN        : boolean                        := true;        -- enable dual-core homogeneous SMP
     BOOT_MODE_SELECT    : natural range 0 to 2           := 2;           -- boot from pre-initialized IMEM
     BOOT_ADDR_CUSTOM    : std_ulogic_vector(31 downto 0) := x"00000000"; -- custom CPU boot address (if boot_config = 1)
-    RISCV_ISA_C         : boolean                        := false;       -- implement compressed extension
+    RISCV_ISA_C         : boolean                        := true;       -- implement compressed extension
     RISCV_ISA_E         : boolean                        := false;       -- implement embedded RF extension
     RISCV_ISA_M         : boolean                        := true;        -- implement mul/div extension
     RISCV_ISA_U         : boolean                        := true;        -- implement user mode extension
@@ -52,9 +52,11 @@ entity neorv32_tb is
     CPU_FAST_SHIFT_EN   : boolean                        := true;        -- use barrel shifter for shift operations
     CPU_RF_HW_RST_EN    : boolean                        := false;       -- implement full hardware reset for register file
     IMEM_EN             : boolean                        := true;        -- implement processor-internal instruction memory
-    IMEM_SIZE           : natural                        := 32*1024;     -- size of processor-internal instruction memory in bytes (use a power of 2)
+    -- IMEM_SIZE           : natural                        := 32*1024;     -- size of processor-internal instruction memory in bytes (use a power of 2)
+    IMEM_SIZE           : natural                        := 64*1024;     -- size of processor-internal instruction memory in bytes (use a power of 2)
     DMEM_EN             : boolean                        := true;        -- implement processor-internal data memory
-    DMEM_SIZE           : natural                        := 8*1024;      -- size of processor-internal data memory in bytes (use a power of 2)
+    -- DMEM_SIZE           : natural                        := 8*1024;      -- size of processor-internal data memory in bytes (use a power of 2)
+    DMEM_SIZE           : natural                        := 64*1024;      -- size of processor-internal data memory in bytes (use a power of 2)
     ICACHE_EN           : boolean                        := true;        -- implement instruction cache
     ICACHE_NUM_BLOCKS   : natural range 1 to 4096        := 64;          -- i-cache: number of blocks (min 1), has to be a power of 2
     DCACHE_EN           : boolean                        := true;        -- implement data cache

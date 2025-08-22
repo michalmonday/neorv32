@@ -136,7 +136,9 @@ entity neorv32_top is
     IO_SLINK_TX_FIFO      : natural range 1 to 2**15       := 1;           -- TX FIFO depth, has to be a power of two, min 1
     IO_TRACER_EN          : boolean                        := false;       -- implement instruction tracer
     IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1;           -- trace buffer depth, has to be a power of two, min 1
-    IO_TRACER_SIMLOG_EN   : boolean                        := false        -- write full trace log to file (simulation-only)
+    IO_TRACER_SIMLOG_EN   : boolean                        := false;       -- write full trace log to file (simulation-only)
+
+    INSTRUCTION_SET_RANDOMISATION_EN : boolean := true -- enable instruction set randomisation
   );
   port (
     -- Global control --
@@ -236,7 +238,10 @@ entity neorv32_top is
     -- CPU interrupts (for chip-internal usage only) --
     mtime_irq_i    : in  std_ulogic := 'L';                                 -- machine timer interrupt, available if IO_CLINT_EN = false
     msw_irq_i      : in  std_ulogic := 'L';                                 -- machine software interrupt, available if IO_CLINT_EN = false
-    mext_irq_i     : in  std_ulogic := 'L'                                  -- machine external interrupt
+    mext_irq_i     : in  std_ulogic := 'L';                                 -- machine external interrupt
+
+    -- Instruction set randomisation
+    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := x"000000000000000000000000" & x"41414141" -- key for instruction set randomisation
   );
 end neorv32_top;
 
@@ -821,13 +826,15 @@ begin
       generic map (
         MEM_SIZE  => imem_size_c,
         MEM_INIT  => imem_as_rom_c,
-        OUTREG_EN => IMEM_OUTREG_EN
+        OUTREG_EN => IMEM_OUTREG_EN,
+        INSTRUCTION_SET_RANDOMISATION_EN => INSTRUCTION_SET_RANDOMISATION_EN
       )
       port map (
         clk_i     => clk_i,
         rstn_i    => rstn_sys,
         bus_req_i => imem_req,
-        bus_rsp_o => imem_rsp
+        bus_rsp_o => imem_rsp,
+        instruction_set_randomisation_key => instruction_set_randomisation_key
       );
     end generate;
 
