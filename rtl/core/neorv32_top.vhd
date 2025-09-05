@@ -241,7 +241,8 @@ entity neorv32_top is
     mext_irq_i     : in  std_ulogic := 'L';                                 -- machine external interrupt
 
     -- Instruction set randomisation
-    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := x"000000000000000000000000" & x"41414141" -- key for instruction set randomisation
+    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := x"000000000000000000000000" & x"41414141"; -- key for instruction set randomisation
+    trace_port : out trace_port_t
   );
 end neorv32_top;
 
@@ -472,6 +473,7 @@ begin
   cpu_firq(14) <= firq(FIRQ_SLINK);
   cpu_firq(15) <= firq(FIRQ_TRNG); -- lowest priority
 
+  trace_port <= trace_s(0);
   -- CPU core(s) + optional caches + bus switch --
   core_complex_gen:
   for i in 0 to num_cores_c-1 generate

@@ -128,10 +128,10 @@ entity neorv32_vivado_ip is
     IO_SLINK_EN           : boolean                        := false;
     IO_SLINK_RX_FIFO      : natural range 1 to 2**15       := 1;
     IO_SLINK_TX_FIFO      : natural range 1 to 2**15       := 1;
-    IO_TRACER_EN          : boolean                        := false;
+    IO_TRACER_EN          : boolean                        := true;
     IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1;
 
-    INSTRUCTION_SET_RANDOMISATION_EN : boolean := true    
+    INSTRUCTION_SET_RANDOMISATION_EN : boolean := true
   );
   port (
     -- ------------------------------------------------------------
@@ -258,7 +258,30 @@ entity neorv32_vivado_ip is
     msw_irq_i      : in  std_logic := '0';
     mext_irq_i     : in  std_logic := '0';
 
-    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) 
+    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0);
+    trace_port_valid : out std_ulogic;
+    trace_port_pc    : out std_ulogic_vector(31 downto 0);
+    trace_port_inst  : out std_ulogic_vector(31 downto 0);
+    trace_port_rvc   : out std_ulogic;
+    trace_port_mode  : out std_ulogic_vector(1 downto 0);
+    trace_port_delta : out std_ulogic;
+    trace_port_trap  : out std_ulogic;
+
+    trace_port_valid_2 : out std_ulogic;
+    trace_port_pc_2    : out std_ulogic_vector(31 downto 0);
+    trace_port_inst_2  : out std_ulogic_vector(31 downto 0);
+    trace_port_rvc_2   : out std_ulogic;
+    trace_port_mode_2  : out std_ulogic_vector(1 downto 0);
+    trace_port_delta_2 : out std_ulogic;
+    trace_port_trap_2  : out std_ulogic
+
+    -- valid : std_ulogic; -- set when all signals are valid
+    -- pc    : std_ulogic_vector(31 downto 0); -- instruction address
+    -- inst  : std_ulogic_vector(31 downto 0); -- instruction word
+    -- rvc   : std_ulogic; -- is decompressed instruction
+    -- mode  : std_ulogic_vector(1 downto 0); -- [1] = debug; [0] = privilege level
+    -- delta : std_ulogic; -- non-linear PC change; valid without "valid" being set
+    -- trap  : std_ulogic; -- trap-entry; valid without "valid" being set
   );
 end entity;
 
@@ -353,7 +376,18 @@ architecture neorv32_vivado_ip_rtl of neorv32_vivado_ip is
   signal xbus_req : xbus_req_t;
   signal xbus_rsp : xbus_rsp_t;
 
+  signal trace_port : trace_port_t;
+
 begin
+
+  trace_port_valid <= trace_port.valid;
+  trace_port_pc <= trace_port.pc;
+  trace_port_inst <= trace_port.inst;
+  trace_port_rvc <= trace_port.rvc;
+  trace_port_mode <= trace_port.mode;
+  trace_port_delta <= trace_port.delta;
+  trace_port_trap <= trace_port.trap;
+
 
   -- The Core Of The Problem ----------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -549,7 +583,8 @@ begin
     msw_irq_i      => std_ulogic(msw_irq_i),
     mext_irq_i     => std_ulogic(mext_irq_i),
 
-    instruction_set_randomisation_key => instruction_set_randomisation_key
+    instruction_set_randomisation_key => instruction_set_randomisation_key,
+    trace_port => trace_port
   );
 
 
