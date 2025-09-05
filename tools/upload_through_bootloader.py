@@ -2,10 +2,12 @@ import serial
 import argparse
 import time
 import os
+import threading
 
 parser = argparse.ArgumentParser(description='Upload through bootloader')
 parser.add_argument('--port', type=str, default='/dev/ttyUSB0', help='Serial port to use')
 parser.add_argument('--baudrate', type=int, default=19200, help='Baud rate')
+parser.add_argument('--enable-writing-thread', action='store_true', help='Enable writing thread to allow interaction with the program')
 parser.add_argument('file', type=str, help='File to upload')
 args = parser.parse_args()
 
@@ -54,6 +56,10 @@ def read_serial_and_print(ser, block=False, timeout=0):
         received = True
     return last_line
 
+def input_worker(ser):
+    while True:
+        user_input = input()
+        ser.write(user_input.encode() + b'\n')
 
 with serial.Serial(args.port, args.baudrate, timeout=1) as ser:
     # read whatever is available
@@ -79,6 +85,8 @@ with serial.Serial(args.port, args.baudrate, timeout=1) as ser:
     print("Sending 'start executable' command")
     ser.write(b'e')
 
-    print("Reading output continuously...")
+    print("Reading output continuously, and starting input thread (to allow interaction with the program)...")
+    if args.enable_writing_thread:
+        threading.Thread(target=input_worker, args=(ser,), daemon=True).start()
     while True:
         read_serial_and_print(ser)
