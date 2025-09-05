@@ -32,7 +32,7 @@ def encrypt_bin_file(bin_file_path, key_file_path, output_file_path, verbose=Fal
         instruction = struct.unpack("<I", bin_data[i:i+4])[0]
         # Encrypt the instruction
         encrypted_instruction = instruction ^ struct.unpack("<I", key)[0] ^ i
-        encrypted_data.extend(struct.pack(">I", encrypted_instruction))
+        encrypted_data.extend(struct.pack("<I", encrypted_instruction))
         # import pdb; pdb.set_trace()
 
         if verbose:
