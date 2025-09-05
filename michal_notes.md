@@ -18,20 +18,20 @@ Using USER_FLAGS from command line overrides completely the USER_FLAGS from make
 * created tools/encrypt_bin.py and `tools/key_file` (storing the key "AAAA" -> 0x41414141)   
 * `neorv32_top` module component had to be modified in `neorv32_package.vhd`  
 * Added `rtl/isr_related` directory with some helper modules (`io_buf_for_i2c.vhd`, `shift_register.vhd`)  
-* Modified bootloader to avoid stopping when signature of uploaded binary doesn't match:  
+<!-- * Modified bootloader to avoid stopping when signature of uploaded binary doesn't match:   -->
 
-```cpp
+<!-- ```cpp
     // signature OK?
     if (exe_sign != EXE_SIGNATURE) {
       uart_puts("ERROR_SIGNATURE (but allowing to run because of instruction set randomisation)\n");
       // return 1;
     }
-```
+``` -->
 
 
 Example running coremark:  
 ```bash
 cd sw/examples/coremark
-make clean_all image
-sudo python3 ../../../tools/upload_through_bootloader.py build/main.bin
+make clean_all image exe ENCRYPT_BIN_MAIN=1
+sudo python3 ../../../tools/upload_through_bootloader.py neorv32_exe.bin
 ```
