@@ -34,10 +34,11 @@ end neorv32_cfs;
 architecture neorv32_cfs_rtl of neorv32_cfs is
 
   -- exemplary CFS interface registers --
-  type cfs_regs_t is array (0 to 3) of std_ulogic_vector(31 downto 0); -- implement 4 registers for this example
-  signal cfs_reg_wr : cfs_regs_t; -- for WRITE accesses
-  signal cfs_reg_rd : cfs_regs_t; -- for READ accesses
+  -- type cfs_regs_t is array (0 to 3) of std_ulogic_vector(31 downto 0); -- implement 4 registers for this example
+  -- signal cfs_reg_wr : cfs_regs_t; -- for WRITE accesses
+  -- signal cfs_reg_rd : cfs_regs_t; -- for READ accesses
 
+  signal engine_trigger : std_ulogic;
 begin
 
   -- CFS Generics ---------------------------------------------------------------------------
@@ -56,7 +57,9 @@ begin
   --
   -- If the CFU output signals are to be used outside the chip, it is recommended to register these signals.
 
-  cfs_out_o <= (others => '0'); -- not used for this minimal example
+  -- cfs_out_o <= (others => '0'); -- not used for this minimal example
+  cfs_out_o(0) <= engine_trigger; 
+  cfs_out_o(255 downto 1) <= (others => '0');
 
 
   -- Reset System ---------------------------------------------------------------------------
@@ -107,10 +110,11 @@ begin
   bus_access: process(rstn_i, clk_i)
   begin
     if (rstn_i = '0') then
-      cfs_reg_wr(0) <= (others => '0');
-      cfs_reg_wr(1) <= (others => '0');
-      cfs_reg_wr(2) <= (others => '0');
-      cfs_reg_wr(3) <= (others => '0');
+      engine_trigger <= '0';
+      -- cfs_reg_wr(0) <= (others => '0');
+      -- cfs_reg_wr(1) <= (others => '0');
+      -- cfs_reg_wr(2) <= (others => '0');
+      -- cfs_reg_wr(3) <= (others => '0');
       bus_rsp_o     <= rsp_terminate_c;
     elsif rising_edge(clk_i) then -- synchronous interface for read and write accesses
       -- transfer/access acknowledge --
@@ -128,27 +132,30 @@ begin
         -- write access (word-wise) --
         if (bus_req_i.rw = '1') then
           if (bus_req_i.addr(15 downto 2) = "00000000000000") then -- 16-bit byte address = 14-bit word address
-            cfs_reg_wr(0) <= bus_req_i.data;
+            -- cfs_reg_wr(0) <= bus_req_i.data;
+            engine_trigger <= bus_req_i.data(0);
           end if;
-          if (bus_req_i.addr(15 downto 2) = "00000000000001") then
-            cfs_reg_wr(1) <= bus_req_i.data;
-          end if;
-          if (bus_req_i.addr(15 downto 2) = "00000000000010") then
-            cfs_reg_wr(2) <= bus_req_i.data;
-          end if;
-          if (bus_req_i.addr(15 downto 2) = "00000000000011") then
-            cfs_reg_wr(3) <= bus_req_i.data;
-          end if;
+          -- if (bus_req_i.addr(15 downto 2) = "00000000000001") then
+          --   cfs_reg_wr(1) <= bus_req_i.data;
+          -- end if;
+          -- if (bus_req_i.addr(15 downto 2) = "00000000000010") then
+          --   cfs_reg_wr(2) <= bus_req_i.data;
+          -- end if;
+          -- if (bus_req_i.addr(15 downto 2) = "00000000000011") then
+          --   cfs_reg_wr(3) <= bus_req_i.data;
+          -- end if;
 
         -- read access (word-wise) --
         else
-          case bus_req_i.addr(15 downto 2) is -- 16-bit byte address = 14-bit word address
-            when "00000000000000" => bus_rsp_o.data <= cfs_reg_rd(0);
-            when "00000000000001" => bus_rsp_o.data <= cfs_reg_rd(1);
-            when "00000000000010" => bus_rsp_o.data <= cfs_reg_rd(2);
-            when "00000000000011" => bus_rsp_o.data <= cfs_reg_rd(3);
-            when others           => bus_rsp_o.data <= (others => '0');
-          end case;
+          -- no reading
+
+          -- case bus_req_i.addr(15 downto 2) is -- 16-bit byte address = 14-bit word address
+          --   when "00000000000000" => bus_rsp_o.data <= cfs_reg_rd(0);
+          --   when "00000000000001" => bus_rsp_o.data <= cfs_reg_rd(1);
+          --   when "00000000000010" => bus_rsp_o.data <= cfs_reg_rd(2);
+          --   when "00000000000011" => bus_rsp_o.data <= cfs_reg_rd(3);
+          --   when others           => bus_rsp_o.data <= (others => '0');
+          -- end case;
         end if;
 
       end if;
@@ -163,10 +170,10 @@ begin
   -- The logic below is just a very simple example that transforms data
   -- from an input register into data in an output register.
 
-  cfs_reg_rd(0) <= x"0000000" & "000" & or_reduce_f(cfs_reg_wr(0)); -- OR all bits
-  cfs_reg_rd(1) <= x"0000000" & "000" & xor_reduce_f(cfs_reg_wr(1)); -- XOR all bits
-  cfs_reg_rd(2) <= bit_rev_f(cfs_reg_wr(2)); -- bit reversal
-  cfs_reg_rd(3) <= (others => '1');
+  -- cfs_reg_rd(0) <= x"0000000" & "000" & or_reduce_f(cfs_reg_wr(0)); -- OR all bits
+  -- cfs_reg_rd(1) <= x"0000000" & "000" & xor_reduce_f(cfs_reg_wr(1)); -- XOR all bits
+  -- cfs_reg_rd(2) <= bit_rev_f(cfs_reg_wr(2)); -- bit reversal
+  -- cfs_reg_rd(3) <= (others => '1');
 
 
 end neorv32_cfs_rtl;
