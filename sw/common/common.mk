@@ -91,7 +91,7 @@ BOOT_VHD = neorv32_bootloader_image.vhd
 BIN_MAIN = $(BUILD_DIR)/main.bin
 
 # For instruction set randomisation
-ENCRYPT_BIN_MAIN ?= 0
+ENCRYPTION_KEY ?= 0
 NEORV32_TOOLS_PATH ?= $(NEORV32_HOME)/tools
 PYTHON ?= python3
 
@@ -232,11 +232,12 @@ $(APP_ASM): $(APP_ELF)
 # Generate final executable from .text + .rodata + .data (in THIS order!)
 $(BIN_MAIN): $(APP_ELF) | $(BUILD_DIR)
 	$(Q)$(OBJCOPY) -I elf32-little $< -j .text -j .rodata -j .data -O binary $@
-	if [ $(ENCRYPT_BIN_MAIN) -eq 1 ]; then \
+# check if ENCRYPTION_KEY is set to anything
+	if [ $(ENCRYPTION_KEY) != 0 ]; then \
 		echo "Encrypting $@"; \
-		$(PYTHON) $(NEORV32_TOOLS_PATH)/encrypt_bin.py $@ $(NEORV32_TOOLS_PATH)/key_file $@; \
+		$(PYTHON) $(NEORV32_TOOLS_PATH)/encrypt_bin.py $@ $(ENCRYPTION_KEY) $@; \
 		chmod +x $@; \
-	fi
+	fi	
 
 # -----------------------------------------------------------------------------
 # Application targets: Generate executable formats
