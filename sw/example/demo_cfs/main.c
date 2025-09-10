@@ -52,10 +52,14 @@ int main() {
     return 1;
   }
 
-  neorv32_uart0_printf("<<< NEORV32 Custom Functions Subsystem (CFS) Demo Program >>>\n\n");
+  // neorv32_uart0_printf("<<< NEORV32 Custom Functions Subsystem (CFS) Demo Program >>>\n\n");
+  neorv32_uart0_printf("<<< NEORV32 Engine driving program >>>\n\n");
   while (true) {
     NEORV32_CFS->REG[0] = 1; 
     NEORV32_CFS->REG[0] = 0; 
+    // timestamp
+    neorv32_uart0_printf("%u: Engine running...\n", neorv32_rte_get_timestamp());
+    neorv32_cpu_delay_ms(500);
   }
 
   // // intro
