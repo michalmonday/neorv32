@@ -54,12 +54,13 @@ int main() {
 
   // neorv32_uart0_printf("<<< NEORV32 Custom Functions Subsystem (CFS) Demo Program >>>\n\n");
   neorv32_uart0_printf("<<< NEORV32 Engine driving program >>>\n\n");
+  int i = 0;
   while (true) {
     NEORV32_CFS->REG[0] = 1; 
     NEORV32_CFS->REG[0] = 0; 
     // timestamp
-    neorv32_uart0_printf("%u: Engine running...\n", neorv32_rte_get_timestamp());
-    for (i = 0; i < 10000; i++); // wait a bit
+    neorv32_uart0_printf("%u: Engine running...\n", i++);
+    for (int j = 0; j < 10000; j++); // wait a bit
   }
 
   // // intro
