@@ -59,7 +59,7 @@ int main() {
     NEORV32_CFS->REG[0] = 0; 
     // timestamp
     neorv32_uart0_printf("%u: Engine running...\n", neorv32_rte_get_timestamp());
-    neorv32_cpu_delay_ms(500);
+    for (i = 0; i < 10000; i++); // wait a bit
   }
 
   // // intro
