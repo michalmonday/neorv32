@@ -828,7 +828,7 @@ package neorv32_package is
     generic (
       -- General --
       CLOCK_FREQUENCY       : natural                        := 0;
-      TRACE_PORT_EN         : boolean                        := false;
+      TRACE_PORT_EN         : boolean                        := true;
       DUAL_CORE_EN          : boolean                        := false;
       -- Boot Configuration --
       BOOT_MODE_SELECT      : natural range 0 to 2           := 0;

@@ -22,7 +22,7 @@ entity neorv32_top is
   generic (
     -- General --
     CLOCK_FREQUENCY       : natural                        := 0;           -- clock frequency of clk_i in Hz
-    TRACE_PORT_EN         : boolean                        := false;       -- enable CPU execution trace port
+    TRACE_PORT_EN         : boolean                        := true;       -- enable CPU execution trace port
     DUAL_CORE_EN          : boolean                        := false;       -- enable dual-core homogeneous SMP
 
     -- Boot Configuration --

@@ -145,7 +145,8 @@ begin
     XBUS_EN               => true,                           -- implement external memory bus interface?
     XBUS_REGSTAGE_EN      => false,                          -- add XBUS register stage
     -- Processor peripherals --
-    IO_CLINT_EN           => configs_c.clint(CONFIG)         -- implement core local interruptor (CLINT)?
+    IO_CLINT_EN           => configs_c.clint(CONFIG),         -- implement core local interruptor (CLINT)?
+    TRACE_PORT_EN => true
   )
   port map (
     -- Global control --

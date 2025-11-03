@@ -129,7 +129,9 @@ entity neorv32_vivado_ip is
     IO_SLINK_RX_FIFO      : natural range 1 to 2**15       := 1;
     IO_SLINK_TX_FIFO      : natural range 1 to 2**15       := 1;
     IO_TRACER_EN          : boolean                        := false;
-    IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1
+    IO_TRACER_BUFFER      : natural range 1 to 2**15       := 1;
+
+    TRACE_PORT_EN         : boolean                        := true
 
   );
   port (
@@ -255,9 +257,75 @@ entity neorv32_vivado_ip is
     -- CPU Interrupts --
     mtime_irq_i    : in  std_logic := '0';
     msw_irq_i      : in  std_logic := '0';
-    mext_irq_i     : in  std_logic := '0'
+    mext_irq_i     : in  std_logic := '0';
+
+    rvfi_valid_o   : out std_logic := '0';
+    rvfi_order_o   : out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_insn_o    : out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_trap_o    : out std_logic := '0';
+    rvfi_halt_o    : out std_logic := '0';
+    rvfi_intr_o    : out std_logic := '0';
+    rvfi_mode_o    : out std_logic_vector(1 downto 0) := (others => '0');
+    rvfi_ixl_o     : out std_logic_vector(1 downto 0) := (others => '0');
+    rvfi_debug_o   : out std_logic := '0';
+    rvfi_compr_o   : out std_logic := '0';
+    rvfi_rs1_addr_o: out std_logic_vector(4 downto 0) := (others => '0');
+    rvfi_rs2_addr_o: out std_logic_vector(4 downto 0) := (others => '0');
+    rvfi_rs1_rdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_rs2_rdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_rd_addr_o : out std_logic_vector(4 downto 0) := (others => '0');
+    rvfi_rd_rdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_pc_rdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_pc_wdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_csr_addr_o: out std_logic_vector(11 downto 0) := (others => '0');
+    rvfi_csr_rdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_csr_wdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_mem_addr_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_mem_rmask_o: out std_logic_vector(3 downto 0) := (others => '0');
+    rvfi_mem_wmask_o: out std_logic_vector(3 downto 0) := (others => '0');
+    rvfi_mem_rdata_o: out std_logic_vector(31 downto 0) := (others => '0');
+    rvfi_mem_wdata_o: out std_logic_vector(31 downto 0) := (others => '0')
+
+
   );
 end entity;
+
+  -- type trace_port_t is record
+  --   valid     : std_ulogic; -- all other signals are valid when set
+  --   -- instruction metadata --
+  --   order     : std_ulogic_vector(31 downto 0); -- instruction index
+  --   insn      : std_ulogic_vector(31 downto 0); -- instruction word
+  --   trap      : std_ulogic; -- set if the current instruction causes a sync exception
+  --   halt      : std_ulogic; -- set if last instruction before halting
+  --   intr      : std_ulogic; -- set if executing the first instruction of a trap handler
+  --   mode      : std_ulogic_vector(1 downto 0); -- 00 = user mode, 11 = machine mode
+  --   ixl       : std_ulogic_vector(1 downto 0); -- XLEN; 01 = 32-bit
+  --   debug     : std_ulogic; -- set if instruction is executed in debug-mode
+  --   compr     : std_ulogic; -- set if instruction is a decompressed instruction
+  --   -- integer register --
+  --   rs1_addr  : std_ulogic_vector(4 downto 0);  -- rs1 address
+  --   rs2_addr  : std_ulogic_vector(4 downto 0);  -- rs2 address
+  --   rs1_rdata : std_ulogic_vector(31 downto 0); -- rs1 read data
+  --   rs2_rdata : std_ulogic_vector(31 downto 0); -- rs2 read data
+  --   rd_addr   : std_ulogic_vector(4 downto 0);  -- rd address
+  --   rd_rdata  : std_ulogic_vector(31 downto 0); -- rd write data
+  --   -- program counter --
+  --   pc_rdata  : std_ulogic_vector(31 downto 0); -- current instruction address
+  --   pc_wdata  : std_ulogic_vector(31 downto 0); -- next instruction address
+  --   -- control and status register --
+  --   csr_addr  : std_ulogic_vector(11 downto 0); -- csr address
+  --   csr_rdata : std_ulogic_vector(31 downto 0); -- csr read data
+  --   csr_wdata : std_ulogic_vector(31 downto 0); -- csr write data
+  --   -- memory access --
+  --   mem_addr  : std_ulogic_vector(31 downto 0); -- address
+  --   mem_rmask : std_ulogic_vector(3 downto 0);  -- read-enable
+  --   mem_wmask : std_ulogic_vector(3 downto 0);  -- write-enable
+  --   mem_rdata : std_ulogic_vector(31 downto 0); -- read data
+  --   mem_wdata : std_ulogic_vector(31 downto 0); -- write data
+  -- end record;
+
+
+
 
 architecture neorv32_vivado_ip_rtl of neorv32_vivado_ip is
 
@@ -350,7 +418,36 @@ architecture neorv32_vivado_ip_rtl of neorv32_vivado_ip is
   signal xbus_req : xbus_req_t;
   signal xbus_rsp : xbus_rsp_t;
 
+  signal trace_port : trace_port_t;
+
 begin
+
+  rvfi_valid_o    <= trace_port.valid;
+  rvfi_order_o    <= std_logic_vector(trace_port.order);
+  rvfi_insn_o     <= std_logic_vector(trace_port.insn);
+  rvfi_trap_o     <= trace_port.trap;
+  rvfi_halt_o     <= trace_port.halt;
+  rvfi_intr_o     <= trace_port.intr;
+  rvfi_mode_o     <= std_logic_vector(trace_port.mode);
+  rvfi_ixl_o      <= std_logic_vector(trace_port.ixl);
+  rvfi_debug_o    <= trace_port.debug;
+  rvfi_compr_o    <= trace_port.compr;
+  rvfi_rs1_addr_o <= std_logic_vector(trace_port.rs1_addr);
+  rvfi_rs2_addr_o <= std_logic_vector(trace_port.rs2_addr);
+  rvfi_rs1_rdata_o<= std_logic_vector(trace_port.rs1_rdata);
+  rvfi_rs2_rdata_o<= std_logic_vector(trace_port.rs2_rdata);
+  rvfi_rd_addr_o  <= std_logic_vector(trace_port.rd_addr);
+  rvfi_rd_rdata_o <= std_logic_vector(trace_port.rd_rdata);
+  rvfi_pc_rdata_o <= std_logic_vector(trace_port.pc_rdata);
+  rvfi_pc_wdata_o <= std_logic_vector(trace_port.pc_wdata);
+  rvfi_csr_addr_o <= std_logic_vector(trace_port.csr_addr);
+  rvfi_csr_rdata_o<= std_logic_vector(trace_port.csr_rdata);
+  rvfi_csr_wdata_o<= std_logic_vector(trace_port.csr_wdata);
+  rvfi_mem_addr_o <= std_logic_vector(trace_port.mem_addr);
+  rvfi_mem_rmask_o<= std_logic_vector(trace_port.mem_rmask);
+  rvfi_mem_wmask_o<= std_logic_vector(trace_port.mem_wmask);
+  rvfi_mem_rdata_o<= std_logic_vector(trace_port.mem_rdata);
+  rvfi_mem_wdata_o<= std_logic_vector(trace_port.mem_wdata);
 
   -- The Core Of The Problem ----------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -458,7 +555,9 @@ begin
     IO_SLINK_RX_FIFO    => IO_SLINK_RX_FIFO,
     IO_SLINK_TX_FIFO    => IO_SLINK_TX_FIFO,
     IO_TRACER_EN        => IO_TRACER_EN,
-    IO_TRACER_BUFFER    => IO_TRACER_BUFFER
+    IO_TRACER_BUFFER    => IO_TRACER_BUFFER,
+
+    TRACE_PORT_EN       => TRACE_PORT_EN
   )
   port map (
     -- Global control --
@@ -542,7 +641,10 @@ begin
     -- CPU Interrupts --
     mtime_irq_i    => std_ulogic(mtime_irq_i),
     msw_irq_i      => std_ulogic(msw_irq_i),
-    mext_irq_i     => std_ulogic(mext_irq_i)
+    mext_irq_i     => std_ulogic(mext_irq_i),
+
+    trace_cpu0_o   => trace_port
+
   );
 
 
