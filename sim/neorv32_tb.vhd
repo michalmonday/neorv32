@@ -227,7 +227,9 @@ begin
     IO_SLINK_TX_FIFO    => 4,
     IO_TRACER_EN        => true,
     IO_TRACER_BUFFER    => 32,
-    IO_TRACER_SIMLOG_EN => TRACE_LOG_EN
+    IO_TRACER_SIMLOG_EN => TRACE_LOG_EN,
+
+    INSTRUCTION_SET_RANDOMISATION_EN => true
   )
   port map (
     -- Global control --
@@ -311,7 +313,9 @@ begin
     -- CPU Interrupts --
     mtime_irq_i    => mti,
     msw_irq_i      => msi,
-    mext_irq_i     => mei
+    mext_irq_i     => mei,
+
+    instruction_set_randomisation_key => x"000000000000000000000000" & x"41414141" -- key for instruction set randomisation
   );
 
 

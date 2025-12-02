@@ -31,7 +31,8 @@ entity neorv32_cpu_regfile is
   generic (
     RST_EN : boolean; -- implement dedicated hardware reset ("ASIC style")
     RVE_EN : boolean; -- implement embedded RF extension
-    RS3_EN : boolean  -- implement 3rd read port
+    RS3_EN : boolean;  -- implement 3rd read port
+    INSTRUCTION_SET_RANDOMISATION_EN : boolean := false 
   );
   port (
     -- global control --
@@ -42,7 +43,8 @@ entity neorv32_cpu_regfile is
     rd_i   : in  std_ulogic_vector(XLEN-1 downto 0); -- destination operand rd
     rs1_o  : out std_ulogic_vector(XLEN-1 downto 0); -- source operand rs1
     rs2_o  : out std_ulogic_vector(XLEN-1 downto 0); -- source operand rs2
-    rs3_o  : out std_ulogic_vector(XLEN-1 downto 0)  -- source operand rs3
+    rs3_o  : out std_ulogic_vector(XLEN-1 downto 0);  -- source operand rs3
+    instruction_set_randomisation_key : in  std_ulogic_vector(127 downto 0)
   );
 end neorv32_cpu_regfile;
 
@@ -61,6 +63,8 @@ architecture neorv32_cpu_regfile_rtl of neorv32_cpu_regfile is
   signal opa_addr : std_ulogic_vector(4 downto 0); -- rs1/rd address
   signal rs3_addr : std_ulogic_vector(4 downto 0); -- rs3 address
 
+  signal isr_block_i : std_ulogic_vector(127 downto 0) := (others => '0');
+  signal rd_i_encrypted : std_ulogic_vector(XLEN-1 downto 0) := (others => '0');
 begin
 
   -- FPGA-Style Register File (BlockRAM, no hardware reset at all) --------------------------
@@ -83,7 +87,7 @@ begin
     begin
       if rising_edge(clk_i) then
         if (rf_we = '1') then
-          reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i;
+          reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i_encrypted;
         end if;
         rs1_o <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0))));
         rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0))));
@@ -107,7 +111,7 @@ begin
           reg_file(i) <= (others => '0'); -- full hardware reset
         elsif rising_edge(clk_i) then
           if (unsigned(ctrl_i.rf_rd(addr_bits_c-1 downto 0)) = to_unsigned(i, addr_bits_c)) and (ctrl_i.rf_wb_en = '1') then
-            reg_file(i) <= rd_i;
+            reg_file(i) <= rd_i_encrypted;
           end if;
         end if;
       end process register_file;
@@ -151,5 +155,31 @@ begin
   -- RISC-V rs3 operand --
   rs3_addr <= ctrl_i.ir_funct12(11 downto 7);
 
+  isr_enabled_enc:
+  if INSTRUCTION_SET_RANDOMISATION_EN generate
+    instruction_set_randomisation_instance_enc : entity neorv32.neorv32_instruction_set_randomisation
+      GENERIC MAP (
+          DECRYPTION_TYPE => XOR_DEC
+      )
+      PORT MAP (
+              clk => clk_i,
+              rst_n => rstn_i, -- not reset and not instruction_set_randomisation_reset,
+              instruction_set_randomisation_key => instruction_set_randomisation_key,
+              i_instruction => rd_i,
+              -- i_block => rom_output_block_for_ascon,
+              i_block => isr_block_i,
+
+              -- begin_decryption should be set to 1 when the instruction is ready to be decrypted
+              -- for simple XOR decryption (that uses combinational logic) it can always be 1 
+              -- for ascon implementation, it should be set to 1 only when module is not already busy decrypting
+              -- begin_decryption => instruction_set_randimisation_begin_decryption,
+              begin_decryption => '1',
+              -- program counter is 32 bits, opa_addr is only 5 bits, so we need to concatinate 0s
+              program_counter => "000000000000000000000000000" & opa_addr,
+              o_instruction => rd_i_encrypted,
+              -- decryption_done => instruction_set_randimisation_decryption_done -- if this is 0, then CPU should wait until the instruction is decrypted
+              decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted
+          );
+  end generate;
 
 end neorv32_cpu_regfile_rtl;

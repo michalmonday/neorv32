@@ -68,7 +68,9 @@ entity neorv32_cpu is
     HPM_NUM_CNTS        : natural range 0 to 13; -- number of implemented HPM counters (0..13)
     HPM_CNT_WIDTH       : natural range 0 to 64; -- total size of HPM counters (0..64)
     -- Trigger Module (TM) --
-    NUM_HW_TRIGGERS     : natural range 0 to 16 -- number of hardware triggers
+    NUM_HW_TRIGGERS     : natural range 0 to 16; -- number of hardware triggers
+    
+    INSTRUCTION_SET_RANDOMISATION_EN : boolean := false  -- enable instruction set randomisation support
   );
   port (
     -- global control --
@@ -88,7 +90,8 @@ entity neorv32_cpu is
     ibus_rsp_i : in  bus_rsp_t; -- response bus
     -- data bus interface --
     dbus_req_o : out bus_req_t; -- request bus
-    dbus_rsp_i : in  bus_rsp_t  -- response bus
+    dbus_rsp_i : in  bus_rsp_t;  -- response bus
+    instruction_set_randomisation_key : in  std_ulogic_vector(127 downto 0)
   );
 end neorv32_cpu;
 
@@ -355,7 +358,8 @@ begin
   generic map (
     RST_EN => CPU_RF_HW_RST_EN, -- enable dedicated hardware reset ("ASIC style")
     RVE_EN => RISCV_ISA_E,      -- implement embedded RF extension
-    RS3_EN => rf_rs3_en_c       -- enable 3rd read port
+    RS3_EN => rf_rs3_en_c,       -- enable 3rd read port
+    INSTRUCTION_SET_RANDOMISATION_EN => INSTRUCTION_SET_RANDOMISATION_EN 
   )
   port map (
     -- global control --
@@ -366,7 +370,8 @@ begin
     rd_i   => rf_wdata, -- destination operand rd
     rs1_o  => rs1,      -- source operand rs1
     rs2_o  => rs2,      -- source operand rs2
-    rs3_o  => rs3       -- source operand rs3
+    rs3_o  => rs3,       -- source operand rs3
+    instruction_set_randomisation_key => instruction_set_randomisation_key
   );
 
   -- all buses are zero unless there is an according operation --

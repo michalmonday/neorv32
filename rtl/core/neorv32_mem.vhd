@@ -24,7 +24,8 @@ entity neorv32_mem is
     MEM_SIZE  : natural; -- memory size in bytes, has to be a power of 2, min 4
     MEM_INIT  : boolean; -- implement memory as ROM, pre-initialized with application image
     OUTREG_EN : boolean;  -- add output register stage
-    INSTRUCTION_SET_RANDOMISATION_EN    : boolean := false -- enable instruction set randomisation
+    INSTRUCTION_SET_RANDOMISATION_ENC_EN    : boolean := false; -- enable instruction set randomisation encryption
+    INSTRUCTION_SET_RANDOMISATION_DEC_EN    : boolean := false -- enable instruction set randomisation decryption
   );
   port (
     clk_i     : in  std_ulogic; -- global clock line
@@ -66,6 +67,8 @@ architecture neorv32_mem_rtl of neorv32_mem is
   signal addr_copy_32bit_delayed      : std_ulogic_vector(31 downto 0) := (others => '0'); 
   signal isr_begin_decryption : std_ulogic := '1';
   signal isr_block_i : std_ulogic_vector(127 downto 0) := (others => '0');
+
+  signal bus_req_i_data_encrypted : std_ulogic_vector(31 downto 0) := (others => '0');
 begin
 
   -- Sanity Checks --------------------------------------------------------------------------
@@ -74,7 +77,6 @@ begin
     "[NEORV32] Application image (" & natural'image(application_init_size_c) &
     " bytes) does not fit into processor-internal instruction memory (" &
     natural'image(MEM_SIZE) & " bytes)!" severity error;
-
 
   -- Implement memory as pre-initialized ROM ------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -103,16 +105,20 @@ begin
         if (bus_req_i.stb = '1') then
           if (bus_req_i.rw = '1') then -- write access
             if (bus_req_i.ben(0) = '1') then
-              mem_ram_b0(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(7 downto 0);
+              -- mem_ram_b0(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(7 downto 0);
+              mem_ram_b0(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i_data_encrypted(7 downto 0);
             end if;
             if (bus_req_i.ben(1) = '1') then
-              mem_ram_b1(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(15 downto 8);
+              -- mem_ram_b1(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(15 downto 8);
+              mem_ram_b1(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i_data_encrypted(15 downto 8);
             end if;
             if (bus_req_i.ben(2) = '1') then
-              mem_ram_b2(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(23 downto 16);
+              -- mem_ram_b2(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(23 downto 16);
+              mem_ram_b2(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i_data_encrypted(23 downto 16);
             end if;
             if (bus_req_i.ben(3) = '1') then
-              mem_ram_b3(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(31 downto 24);
+              -- mem_ram_b3(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i.data(31 downto 24);
+              mem_ram_b3(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2)))) <= bus_req_i_data_encrypted(31 downto 24);
             end if;
           else -- read access
             rdata(7  downto 0)  <= mem_ram_b0(to_integer(unsigned(bus_req_i.addr(addr_hi_c downto 2))));
@@ -167,9 +173,9 @@ begin
     bus_rsp_o.ack  <= rden(0) when MEM_INIT else (rden(0) or wack); -- read-only?
   end generate;
 
-  isr_enabled:
-  if INSTRUCTION_SET_RANDOMISATION_EN generate
-    instruction_set_randomisation_instance : entity neorv32.neorv32_instruction_set_randomisation
+  isr_enabled_dec:
+  if INSTRUCTION_SET_RANDOMISATION_DEC_EN generate
+    instruction_set_randomisation_instance_dec : entity neorv32.neorv32_instruction_set_randomisation
       GENERIC MAP (
           DECRYPTION_TYPE => XOR_DEC
       )
@@ -193,9 +199,40 @@ begin
           );
   end generate;
 
-  isr_disabled:
-  if not INSTRUCTION_SET_RANDOMISATION_EN generate
+  isr_disabled_dec:
+  if not INSTRUCTION_SET_RANDOMISATION_DEC_EN generate
     dout_decrypted <= dout;
+  end generate;
+
+  isr_enabled_enc:
+  if INSTRUCTION_SET_RANDOMISATION_ENC_EN generate
+    instruction_set_randomisation_instance_enc : entity neorv32.neorv32_instruction_set_randomisation
+      GENERIC MAP (
+          DECRYPTION_TYPE => XOR_DEC
+      )
+      PORT MAP (
+              clk => clk_i,
+              rst_n => rstn_i, -- not reset and not instruction_set_randomisation_reset,
+              instruction_set_randomisation_key => instruction_set_randomisation_key,
+              i_instruction => bus_req_i.data,
+              -- i_block => rom_output_block_for_ascon,
+              i_block => isr_block_i,
+
+              -- begin_decryption should be set to 1 when the instruction is ready to be decrypted
+              -- for simple XOR decryption (that uses combinational logic) it can always be 1 
+              -- for ascon implementation, it should be set to 1 only when module is not already busy decrypting
+              -- begin_decryption => instruction_set_randimisation_begin_decryption,
+              begin_decryption => isr_begin_decryption,
+              program_counter => bus_req_i.addr,
+              o_instruction => bus_req_i_data_encrypted,
+              -- decryption_done => instruction_set_randimisation_decryption_done -- if this is 0, then CPU should wait until the instruction is decrypted
+              decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted
+          );
+  end generate;
+
+  isr_disabled_enc:
+  if not INSTRUCTION_SET_RANDOMISATION_ENC_EN generate
+    bus_req_i_data_encrypted <= bus_req_i.data;
   end generate;
   
 end neorv32_mem_rtl;

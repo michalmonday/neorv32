@@ -529,7 +529,9 @@ begin
       HPM_NUM_CNTS        => HPM_NUM_CNTS,
       HPM_CNT_WIDTH       => HPM_CNT_WIDTH,
       -- Trigger Module (TM) --
-      NUM_HW_TRIGGERS     => OCD_NUM_HW_TRIGGERS
+      NUM_HW_TRIGGERS     => OCD_NUM_HW_TRIGGERS,
+
+      INSTRUCTION_SET_RANDOMISATION_EN => INSTRUCTION_SET_RANDOMISATION_EN
     )
     port map (
       -- global control --
@@ -549,7 +551,9 @@ begin
       ibus_rsp_i => cpu_i_rsp(i),
       -- data bus interface --
       dbus_req_o => cpu_d_req(i),
-      dbus_rsp_i => cpu_d_rsp(i)
+      dbus_rsp_i => cpu_d_rsp(i),
+
+      instruction_set_randomisation_key => instruction_set_randomisation_key
     );
 
 
@@ -829,7 +833,8 @@ begin
         MEM_SIZE  => imem_size_c,
         MEM_INIT  => imem_as_rom_c,
         OUTREG_EN => IMEM_OUTREG_EN,
-        INSTRUCTION_SET_RANDOMISATION_EN => INSTRUCTION_SET_RANDOMISATION_EN
+        INSTRUCTION_SET_RANDOMISATION_DEC_EN => INSTRUCTION_SET_RANDOMISATION_EN,
+        INSTRUCTION_SET_RANDOMISATION_ENC_EN => false
       )
       port map (
         clk_i     => clk_i,
@@ -854,13 +859,16 @@ begin
       generic map (
         MEM_SIZE  => dmem_size_c,
         MEM_INIT  => false, -- plain RAM
-        OUTREG_EN => DMEM_OUTREG_EN
+        OUTREG_EN => DMEM_OUTREG_EN,
+        INSTRUCTION_SET_RANDOMISATION_DEC_EN => INSTRUCTION_SET_RANDOMISATION_EN,
+        INSTRUCTION_SET_RANDOMISATION_ENC_EN => INSTRUCTION_SET_RANDOMISATION_EN
       )
       port map (
         clk_i     => clk_i,
         rstn_i    => rstn_sys,
         bus_req_i => dmem_req,
-        bus_rsp_o => dmem_rsp
+        bus_rsp_o => dmem_rsp,
+        instruction_set_randomisation_key => instruction_set_randomisation_key
       );
     end generate;
 
