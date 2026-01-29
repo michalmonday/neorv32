@@ -21,6 +21,7 @@ Original Author: Shay Gal-on
    initial parameters, tun t he benchmark and report the results.
 */
 #include "coremark.h"
+#include <neorv32.h>
 
 /* Function: iterate
         Run the benchmark for a specified number of iterations.
@@ -108,6 +109,7 @@ char *mem_name[3] = { "Static", "Heap", "Stack" };
 MAIN_RETURN_TYPE
 main(void)
 {
+
     int   argc = 0;
     char *argv[1];
 #else
@@ -115,6 +117,10 @@ MAIN_RETURN_TYPE
 main(int argc, char *argv[])
 {
 #endif
+
+    neorv32_gpio_port_set(0); 
+    neorv32_gpio_port_set(1); // 1 led on indicacting start
+
     ee_u16       i, j = 0, num_algorithms = 0;
     ee_s16       known_id = -1, total_errors = 0;
     ee_u16       seedcrc = 0;
@@ -439,5 +445,6 @@ for (i = 0; i < MULTITHREAD; i++)
     /* And last call any target specific code for finalizing */
     portable_fini(&(results[0].port));
 
+    neorv32_gpio_port_set(3); // 2 leds on indicate end
     return MAIN_RETURN_VAL;
 }

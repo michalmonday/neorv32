@@ -65,6 +65,10 @@ architecture neorv32_cpu_regfile_rtl of neorv32_cpu_regfile is
 
   signal isr_block_i : std_ulogic_vector(127 downto 0) := (others => '0');
   signal rd_i_encrypted : std_ulogic_vector(XLEN-1 downto 0) := (others => '0');
+  signal rs1_o_decrypted : std_ulogic_vector(XLEN-1 downto 0) := (others => '0');
+  signal rs2_o_decrypted : std_ulogic_vector(XLEN-1 downto 0) := (others => '0');
+  signal rs3_o_decrypted : std_ulogic_vector(XLEN-1 downto 0) := (others => '0');
+
 begin
 
   -- FPGA-Style Register File (BlockRAM, no hardware reset at all) --------------------------
@@ -87,7 +91,9 @@ begin
     begin
       if rising_edge(clk_i) then
         if (rf_we = '1') then
-          reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i_encrypted;
+          if (opa_addr /= "00000") then -- do not write to x0
+            reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i_encrypted;
+          end if;
         end if;
         rs1_o <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0))));
         rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0))));
@@ -127,8 +133,10 @@ begin
         rs1_o <= (others => '0');
         rs2_o <= (others => '0');
       elsif rising_edge(clk_i) then
-        rs1_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs1(addr_bits_c-1 downto 0))));
-        rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0))));
+        -- rs1_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs1(addr_bits_c-1 downto 0))));
+        -- rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0))));
+        rs1_o <= rs1_o_decrypted;
+        rs2_o <= rs2_o_decrypted;
       end if;
     end process rf_read;
 
@@ -180,6 +188,46 @@ begin
               -- decryption_done => instruction_set_randimisation_decryption_done -- if this is 0, then CPU should wait until the instruction is decrypted
               decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted
           );
+  end generate;
+
+  isr_enabled_dec_rs1:
+  if INSTRUCTION_SET_RANDOMISATION_EN generate
+    rs1_o_decrypted <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(31 downto 0) xor "000000000000000000000000000" & ctrl_i.rf_rs1(4 downto 0);
+  --   instruction_set_randomisation_instance_dec_rs1 : entity neorv32.neorv32_instruction_set_randomisation
+  --     GENERIC MAP (
+  --         DECRYPTION_TYPE => XOR_DEC
+  --     )
+  --     PORT MAP (
+  --             clk => clk_i,
+  --             rst_n => rstn_i, -- not reset and not instruction_set_randomisation_reset,
+  --             instruction_set_randomisation_key => instruction_set_randomisation_key,
+  --             i_instruction => reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))),
+  --             i_block => isr_block_i,
+  --             begin_decryption => '1',
+  --             program_counter => "000000000000000000000000000" & ctrl_i.rf_rs1(4 downto 0),
+  --             o_instruction => rs1_o_decrypted,
+  --             decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted
+  --         );
+  end generate;
+
+  isr_enabled_dec_rs2:
+  if INSTRUCTION_SET_RANDOMISATION_EN generate
+    rs2_o_decrypted <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(63 downto 32) xor "000000000000000000000000000" & ctrl_i.rf_rs2(4 downto 0);
+  --   instruction_set_randomisation_instance_dec_rs2 : entity neorv32.neorv32_instruction_set_randomisation
+  --     GENERIC MAP (
+  --         DECRYPTION_TYPE => XOR_DEC
+  --     )
+  --     PORT MAP (
+  --             clk => clk_i,
+  --             rst_n => rstn_i, -- not reset and not instruction_set_randomisation_reset,
+  --             instruction_set_randomisation_key => instruction_set_randomisation_key,
+  --             i_instruction => reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0)))),
+  --             i_block => isr_block_i,
+  --             begin_decryption => '1',
+  --             program_counter => "000000000000000000000000000" & ctrl_i.rf_rs2(4 downto 0),
+  --             o_instruction => rs2_o_decrypted,
+  --             decryption_done => open -- if this is 0, then CPU should wait until the instruction is decrypted
+  --         );
   end generate;
 
 end neorv32_cpu_regfile_rtl;

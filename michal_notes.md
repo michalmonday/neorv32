@@ -4,7 +4,11 @@ make clean_all sim GHDL_RUN_FLAGS+=" --wave=demo_blink_led.ghw --stop-time=500us
 
 # without USER_FLAGS and with encryption
 make clean_all sim GHDL_RUN_FLAGS+=" --wave=coremark.ghw --stop-time=2us" ENCRYPTION_KEY=0x41414141
+
+# may have to use: RISCV_PREFIX=riscv32-unknown-elf-
 ```
+
+
 
 Using USER_FLAGS from command line overrides completely the USER_FLAGS from make file (e.g. in case of coremark, so it should not be used in that case, the makefile should be modified instead to add a flag)
 

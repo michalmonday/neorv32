@@ -327,6 +327,9 @@ architecture neorv32_top_rtl of neorv32_top is
   signal mtime_irq : std_ulogic_vector(num_cores_c-1 downto 0);
   signal msw_irq   : std_ulogic_vector(num_cores_c-1 downto 0);
 
+
+  signal imem_hash_valid : std_ulogic;
+
 begin
 
   -- **************************************************************************************************************************
@@ -545,7 +548,7 @@ begin
       mei_i      => mext_irq_i,
       mti_i      => mtime_irq(i),
       firq_i     => cpu_firq,
-      dbi_i      => dci_haltreq(i),
+      dbi_i      => dci_haltreq(i), -- or not imem_hash_valid,
       -- instruction bus interface --
       ibus_req_o => cpu_i_req(i),
       ibus_rsp_i => cpu_i_rsp(i),
@@ -841,7 +844,8 @@ begin
         rstn_i    => rstn_sys,
         bus_req_i => imem_req,
         bus_rsp_o => imem_rsp,
-        instruction_set_randomisation_key => instruction_set_randomisation_key
+        instruction_set_randomisation_key => instruction_set_randomisation_key,
+        hash_valid => imem_hash_valid
       );
     end generate;
 

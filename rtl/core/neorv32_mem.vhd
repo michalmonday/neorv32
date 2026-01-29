@@ -25,7 +25,8 @@ entity neorv32_mem is
     MEM_INIT  : boolean; -- implement memory as ROM, pre-initialized with application image
     OUTREG_EN : boolean;  -- add output register stage
     INSTRUCTION_SET_RANDOMISATION_ENC_EN    : boolean := false; -- enable instruction set randomisation encryption
-    INSTRUCTION_SET_RANDOMISATION_DEC_EN    : boolean := false -- enable instruction set randomisation decryption
+    INSTRUCTION_SET_RANDOMISATION_DEC_EN    : boolean := false; -- enable instruction set randomisation decryption
+    HASH_THRESHOLD : natural := 50 -- number of 32-bi words used in hash calculation (for convenient simulation)
   );
   port (
     clk_i     : in  std_ulogic; -- global clock line
@@ -33,7 +34,9 @@ entity neorv32_mem is
     bus_req_i : in  bus_req_t;  -- bus request
     bus_rsp_o : out bus_rsp_t;  -- bus response
 
-    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := (others => '1')
+    instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := (others => '1');
+    hash : out std_ulogic_vector(127 downto 0) := (others => '0');
+    hash_valid : out std_ulogic := '0'
   );
 end neorv32_mem;
 
@@ -69,7 +72,40 @@ architecture neorv32_mem_rtl of neorv32_mem is
   signal isr_block_i : std_ulogic_vector(127 downto 0) := (others => '0');
 
   signal bus_req_i_data_encrypted : std_ulogic_vector(31 downto 0) := (others => '0');
+
+  signal hash_index : natural := 0;
 begin
+
+
+  -- Hash calculation process
+  hash_calculation_process : process(clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if rstn_i = '0' then
+        hash <= (others => '0');
+        hash_index <= 0;
+        hash_valid <= '0';
+      else
+
+        if hash_index = 0 then
+          hash <= (others => '0'); -- reset hash at start
+          hash_valid <= '0';
+          hash_index <= hash_index + 1;
+        -- elsif hash_index < (MEM_SIZE/4) then
+        elsif hash_index < (HASH_THRESHOLD) then
+          -- shift left by 5 and add current word
+          hash <= std_ulogic_vector(rotate_left(unsigned(hash), 5)) xor
+                  std_ulogic_vector(resize(unsigned(mem_rom_c(hash_index)),
+                                            hash'length));
+          hash_index <= hash_index + 1;
+        else
+          hash_valid <= '1';
+          hash_index <= 0;
+        end if;
+      end if;
+    end if;
+  end process hash_calculation_process;
+
 
   -- Sanity Checks --------------------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------

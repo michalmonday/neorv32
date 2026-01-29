@@ -61,6 +61,8 @@
 #define STATUS_LED_PIN 0
 #endif
 
+#define ILLEGAL_INSTRUCTION_LED_PIN 1
+
 /**********************************************************************
  * Auto-boot configuration
  **********************************************************************/

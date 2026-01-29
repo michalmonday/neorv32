@@ -317,6 +317,19 @@ void __attribute__((interrupt("machine"),aligned(4))) bootloader_trap_handler(vo
     return;
   }
 
+  // --- NEW: illegal instruction (exception code 2, and not an interrupt)
+  // MSB=0 -> exception; low bits = cause code
+  // if (((mcause >> 31) == 0) && ((mcause & 0x1F) == 2)) {
+  if (mcause == TRAP_CODE_I_ILLEGAL) {
+    if (neorv32_gpio_available()) {
+      // Turn ON 2nd LED; if LEDs are active-low on your board, use _pin_clr instead.
+      neorv32_gpio_port_set(1 << ILLEGAL_INSTRUCTION_LED_PIN);
+    }
+  } else {
+      neorv32_gpio_port_set(1 << 2);
+  }
+  // }
+
   // unexpected trap
 #if (UART_EN != 0)
   if (neorv32_uart0_available()) {
@@ -338,7 +351,9 @@ void __attribute__((interrupt("machine"),aligned(4))) bootloader_trap_handler(vo
   // permanently light up status LED
 #if (STATUS_LED_EN != 0)
   if (neorv32_gpio_available()) {
-    neorv32_gpio_port_set(1 << STATUS_LED_PIN);
+    uint32_t port = neorv32_gpio_port_get();
+    port |= (1 << STATUS_LED_PIN); // set status LED bit
+    neorv32_gpio_port_set(port);
   }
 #endif
 
@@ -403,8 +418,12 @@ int load_exe(int src) {
     rc |= get_exe_word(src, src_addr + EXE_OFFSET_CHECKSUM, &exe_check);
     // signature OK?
     if (exe_sign != EXE_SIGNATURE) {
-      uart_puts("ERROR_SIGNATURE\n");
-      return 1;
+
+      // uart_puts("ERROR_SIGNATURE\n");
+      // return 1;
+
+      uart_puts("ERROR_SIGNATURE * (but allowing to run because of instruction set randomisation)\n");
+      // return 1;
     }
   }
 
