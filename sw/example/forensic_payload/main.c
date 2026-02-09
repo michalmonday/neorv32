@@ -90,8 +90,7 @@ void main(void) {
 //  }
 
 void exfiltrate_database_content() {
-    // send "all" to PYNQ PS, which interacts with database
-    neorv32_uart0_printf("all\n");
+    neorv32_uart0_printf("SELECT * FROM allowed_barcode_IDs\n");
     wait_ms(500);
     // get response from SQL database on PYNQ
     char response[256];
@@ -100,13 +99,7 @@ void exfiltrate_database_content() {
     while (!end_found) {
         uint64_t qr_num = 0;
         neorv32_uart_gets(NEORV32_UART0, response);
-        // assuming chatgpt is right, it is possible to use 64 bit types
-        // and %lld on 32bit processor, lets see 
-        
 
-        // TODO: chech if it works well,
-        //       if not, maybe add '\n' at the 
-        //       end of the format string 
         int found_count = sscanf(response, "qr:%lld", &qr_num);
         if (!found_count) {
             // check if received string starts with "end"
