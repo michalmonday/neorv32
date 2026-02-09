@@ -14,10 +14,20 @@ EFFORT = -Os
 USER_FLAGS += -ggdb -gdwarf-3
 
 # Adjust processor IMEM size
-USER_FLAGS += -Wl,--defsym,__neorv32_rom_size=256k
+# USER_FLAGS += -Wl,--defsym,__neorv32_rom_size=256k
+USER_FLAGS += -Wl,--defsym,__neorv32_rom_size=8k
 
 # Adjust processor DMEM size
-USER_FLAGS += -Wl,--defsym,__neorv32_ram_size=256k
+# USER_FLAGS += -Wl,--defsym,__neorv32_ram_size=128k
+USER_FLAGS += -Wl,--defsym,__neorv32_ram_size=32k
+
+# These need to be changed, the original program is 112K in size.
+# So placing the second one at 192K (0xFFF50000) should be safe 
+# because the binary is only 572 bytes.
+USER_FLAGS += -Wl,--defsym,__neorv32_rom_base=0x30000 -Wl,--defsym,__neorv32_ram_base=0x80030000
+
+# __neorv32_rom_base = DEFINED(__neorv32_rom_base) ? __neorv32_rom_base : 0x00000000;
+# __neorv32_ram_base = DEFINED(__neorv32_ram_base) ? __neorv32_ram_base : 0x80000000;
 
 # Adjust maximum heap size
 #USER_FLAGS += -Wl,--defsym,__neorv32_heap_size=1k

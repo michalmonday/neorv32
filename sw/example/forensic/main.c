@@ -21,6 +21,14 @@
 #define BAUD_RATE_0 19200
 #define BAUD_RATE_1 115200
 
+__attribute__((used)) static void dummy() {
+    // to prevent linker from optimizing out the functions we need for the attack
+    neorv32_spi_available();
+    neorv32_spi_setup(0, 0, 0, 0);
+    neorv32_spi_disable();
+    neorv32_spi_cs_en(0);
+    neorv32_spi_transfer(0);
+}
 
 // __attribute__((weak)) int _read(int file, char *ptr, int len)
 // {
@@ -128,6 +136,8 @@ void print_variable_address(uint32_t address, char *var_name) {
 }
 
 void main(void) {
+    if (false)
+        dummy();
     // cmd receives keyboard input and barcodes using the same uart_gpio interface 
     // (from the Esp32-based display board), it is used for:
     // - receiving password

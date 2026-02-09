@@ -3,35 +3,38 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <neorv32.h>
+#include <stdint.h>
+// #include <neorv32.h>
 
 #define BAUD_RATE_0 19200
 
-void wait_ms(uint32_t ms) {
-    uint64_t cycles_to_wait = ((uint64_t)100000000 / 1000) * ms;
-    uint64_t start = neorv32_cpu_get_cycle();
-    while ((neorv32_cpu_get_cycle() - start) < cycles_to_wait);
-}
+#define NEORV32_UART0_BASE 0xFFF50000U
+
+// void wait_ms(uint32_t ms) {
+//     uint64_t cycles_to_wait = ((uint64_t)100000000 / 1000) * ms;
+//     uint64_t start = neorv32_cpu_get_cycle();
+//     while ((neorv32_cpu_get_cycle() - start) < cycles_to_wait);
+// }
 
 
-void neorv32_uart_gets(neorv32_uart_t *UARTx, char *buffer) {
-    int idx = 0;
-    char c;
+// void neorv32_uart_gets(neorv32_uart_t *UARTx, char *buffer) {
+//     int idx = 0;
+//     char c;
 
-    // print_variable_address((uint32_t)buffer, "buffer");
-    while (1) {
-        while (!neorv32_uart_char_received(UARTx)) {
-            // wait for data
-        }
-        c = neorv32_uart_getc(UARTx);
-        if (c == '\n' || c == '\r') {
-            buffer[idx] = '\0';
-            break;
-        } else {
-            buffer[idx++] = c;
-        }
-    }
-}
+//     // print_variable_address((uint32_t)buffer, "buffer");
+//     while (1) {
+//         while (!neorv32_uart_char_received(UARTx)) {
+//             // wait for data
+//         }
+//         c = neorv32_uart_getc(UARTx);
+//         if (c == '\n' || c == '\r') {
+//             buffer[idx] = '\0';
+//             break;
+//         } else {
+//             buffer[idx++] = c;
+//         }
+//     }
+// }
 
 
 void exfiltrate_database_content();
@@ -48,9 +51,10 @@ void main(void) {
 
         neorv32_rte_setup();
 
-        neorv32_uart0_setup(BAUD_RATE_0, 0);
+        neorv32_uart_setup(NEORV32_UART0_BASE, BAUD_RATE_0, 0);
         if (neorv32_spi_available() == 0) {
-            neorv32_uart0_printf("ERROR! No SPI unit implemented.");
+            // neorv32_uart0_printf("ERROR! No SPI unit implemented.");
+            neorv32_uart_printf(NEORV32_UART0_BASE, "ERROR! No SPI unit implemented.\n");
             return;
         }
 
@@ -90,7 +94,8 @@ void main(void) {
 //  }
 
 void exfiltrate_database_content() {
-    neorv32_uart0_printf("SELECT * FROM allowed_barcode_IDs\n");
+    // neorv32_uart0_printf("SELECT * FROM allowed_barcode_IDs\n");
+    neorv32_uart_printf(NEORV32_UART0_BASE, "SELECT * FROM allowed_barcode_IDs\n");
     wait_ms(500);
     // get response from SQL database on PYNQ
     char response[256];
@@ -98,7 +103,9 @@ void exfiltrate_database_content() {
     // expect replies containing all barcodes in the database
     while (!end_found) {
         uint64_t qr_num = 0;
-        neorv32_uart_gets(NEORV32_UART0, response);
+
+        // neorv32_uart_gets(NEORV32_UART0, response);
+        neorv32_uart_gets(NEORV32_UART0_BASE, response);
 
         int found_count = sscanf(response, "qr:%lld", &qr_num);
         if (!found_count) {
