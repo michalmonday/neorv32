@@ -21,14 +21,14 @@
 #define BAUD_RATE_0 19200
 #define BAUD_RATE_1 115200
 
-__attribute__((used)) static void dummy() {
-    // to prevent linker from optimizing out the functions we need for the attack
-    neorv32_spi_available();
-    neorv32_spi_setup(0, 0, 0, 0);
-    neorv32_spi_disable();
-    neorv32_spi_cs_en(0);
-    neorv32_spi_transfer(0);
-}
+// __attribute__((used)) static void dummy() {
+//     // to prevent linker from optimizing out the functions we need for the attack
+//     neorv32_spi_available();
+//     neorv32_spi_setup(0, 0, 0, 0);
+//     neorv32_spi_disable();
+//     neorv32_spi_cs_en(0);
+//     neorv32_spi_transfer(0);
+// }
 
 // __attribute__((weak)) int _read(int file, char *ptr, int len)
 // {
@@ -136,8 +136,7 @@ void print_variable_address(uint32_t address, char *var_name) {
 }
 
 void main(void) {
-    if (false)
-        dummy();
+
     // cmd receives keyboard input and barcodes using the same uart_gpio interface 
     // (from the Esp32-based display board), it is used for:
     // - receiving password
@@ -201,6 +200,10 @@ void main(void) {
     print_variable_address((uint32_t)password_buffer, "password_buffer");
     print_variable_address((uint32_t)&dummy_variable, "dummy_variable");
 
+    // the only purpose of this line is to check if the 
+    // program modification attack works well (without the need
+    // to scan a QR code in the lab)
+    unsigned long long barcode_num = barcode_str_to_num("123456789");
 
     neorv32_uart1_puts("reset\n"); // '\n' needed because of gets not adding '\n' at the end
 
@@ -322,8 +325,6 @@ bool is_upca_barcode(unsigned long long barcode) {
 
 unsigned long long barcode_str_to_num(char *barcode_str) {
     unsigned long long barcode = 0;
-    // sscanf(barcode_str, "%llu", &barcode);
-    // neorv32_uart_sscanf(NEORV32_UART0, "%llu", &barcode);
     sscanf(barcode_str, "%llu", &barcode);
 
     return barcode;
