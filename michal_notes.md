@@ -1,9 +1,9 @@
 
 ```bash
-make clean_all sim GHDL_RUN_FLAGS+=" --wave=demo_blink_led.ghw --stop-time=500us" USER_FLAGS+=-DUART0_SIM_MODE
+make clean_all image install sim GHDL_RUN_FLAGS+=" --wave=demo_blink_led.ghw --stop-time=500us" USER_FLAGS+=-DUART0_SIM_MODE
 
 # without USER_FLAGS and with encryption
-make clean_all sim GHDL_RUN_FLAGS+=" --wave=coremark.ghw --stop-time=2us" ENCRYPTION_KEY=0x41414141
+make clean_all image install sim GHDL_RUN_FLAGS+=" --wave=coremark.ghw --stop-time=2us" ENCRYPTION_KEY=0x41414141
 
 # may have to use: RISCV_PREFIX=riscv32-unknown-elf-
 ```
