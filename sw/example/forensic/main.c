@@ -74,14 +74,18 @@ void neorv32_uart_gets(neorv32_uart_t *UARTx, char *buffer) {
             // wait for data
         }
         c = neorv32_uart_getc(UARTx);
-        neorv32_uart0_putc(c);
-        neorv32_uart0_puts("\nbuffer: ");
-        neorv32_uart0_puts(buffer);
-        neorv32_uart0_puts("\n");
+        /* neorv32_uart0_putc(c); */
+        /* neorv32_uart0_puts("\nbuffer: "); */
+        /* neorv32_uart0_puts(buffer); */
+        /* neorv32_uart0_puts("\n"); */
 
-        neorv32_uart0_puts("idx: ");
-        neorv32_uart0_putc('0' + (char)idx);
-        neorv32_uart0_puts("\n");
+        /* neorv32_uart0_putc(c); */
+        /* neorv32_uart0_putc('\n'); */
+
+
+        /* neorv32_uart0_puts("idx: "); */
+        /* neorv32_uart0_putc('0' + (char)idx); */
+        /* neorv32_uart0_puts("\n"); */
         if (c == '\n' || c == '\r') {
             buffer[idx] = '\0';
             break;
@@ -199,6 +203,16 @@ void main(void) {
     print_variable_address((uint32_t)&is_authorized, "is_authorized");
     print_variable_address((uint32_t)password_buffer, "password_buffer");
     print_variable_address((uint32_t)&dummy_variable, "dummy_variable");
+
+    // flush any previously received characters in both uarts
+    // soft-reset of CPU doesn't seem to handle this well
+    while (neorv32_uart_char_received(NEORV32_UART0)) {
+        char c = neorv32_uart_getc(NEORV32_UART0);
+    }
+    while (neorv32_uart_char_received(NEORV32_UART1)) {
+        char c = neorv32_uart_getc(NEORV32_UART1);
+    }
+
 
     // the only purpose of this line is to check if the 
     // program modification attack works well (without the need

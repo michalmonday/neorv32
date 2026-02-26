@@ -24,10 +24,13 @@ def generate_jal_instr(offset, rd=1):
 
 # original call to barcode_str_to_num
 # src = 0x86c 
-src = 0x738 
+# src = 0x738 
+# src = 0x694
+src = 0x6b0
 
 # address of barcode_str_to_num_hooked
-dst = 0x30000
+# dst = 0x30000
+dst = 0x1f7e8
 
 offset = dst - src
 

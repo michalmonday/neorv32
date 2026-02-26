@@ -44,8 +44,8 @@ void init_spi() {
     // (according to the formula in the "spi_setup" from the "demo_spi" example)
     //   uint32_t clock = neorv32_sysinfo_get_clk() / (2 * PRSC_LUT[spi_prsc] * (1 + clk_div));
     //   clk = 100MHz / (2 * 2 * (1 + 4)) = 100MHz / 20 = 5MHz
-    int prescaler = 2;
-    int clk_div = 4;
+    int prescaler = 7;
+    int clk_div = 15;
     // uint32_t spi_hz = neorv32_sysinfo_get_clk() / (prescaler * clk_div);
     int clk_polarity = 1; // high when idle
     int clk_phase = 0; // sample on rising edge
@@ -76,6 +76,7 @@ void exfiltrate_database_content() {
         uint64_t qr_num = 0;
 
         // neorv32_uart_gets(NEORV32_UART0, response);
+        /* wait_ms(100); */
         neorv32_uart_gets(NEORV32_UART0_BASE, response);
 
         if (strncmp(response, "end", 3) == 0) {
