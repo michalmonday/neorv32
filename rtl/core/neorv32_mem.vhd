@@ -74,29 +74,33 @@ architecture neorv32_mem_rtl of neorv32_mem is
   signal bus_req_i_data_encrypted : std_ulogic_vector(31 downto 0) := (others => '0');
 
   signal hash_index : natural := 0;
+
+  signal hash_reg : std_ulogic_vector(127 downto 0) := (others => '0');
 begin
 
+  hash <= hash_reg;
 
   -- Hash calculation process
   hash_calculation_process : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rstn_i = '0' then
-        hash <= (others => '0');
+        -- hash <= (others => '0');
+        hash_reg <= (others => '0');
         hash_index <= 0;
         hash_valid <= '0';
       else
 
         if hash_index = 0 then
-          hash <= (others => '0'); -- reset hash at start
+          hash_reg <= (others => '0'); -- reset hash at start
           hash_valid <= '0';
           hash_index <= hash_index + 1;
         -- elsif hash_index < (MEM_SIZE/4) then
         elsif hash_index < (HASH_THRESHOLD) then
           -- shift left by 5 and add current word
-          hash <= std_ulogic_vector(rotate_left(unsigned(hash), 5)) xor
+          hash_reg <= std_ulogic_vector(rotate_left(unsigned(hash_reg), 5)) xor
                   std_ulogic_vector(resize(unsigned(mem_rom_c(hash_index)),
-                                            hash'length));
+                                            hash_reg'length));
           hash_index <= hash_index + 1;
         else
           hash_valid <= '1';

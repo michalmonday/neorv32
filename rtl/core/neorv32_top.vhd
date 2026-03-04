@@ -242,7 +242,10 @@ entity neorv32_top is
 
     -- Instruction set randomisation
     instruction_set_randomisation_key : in std_ulogic_vector(127 downto 0) := x"000000000000000000000000" & x"41414141"; -- key for instruction set randomisation
-    trace_port : out trace_port_t
+    trace_port : out trace_port_t;
+    imem_hash : out std_ulogic_vector(127 downto 0);
+    imem_hash_valid : out std_ulogic
+
   );
 end neorv32_top;
 
@@ -328,7 +331,7 @@ architecture neorv32_top_rtl of neorv32_top is
   signal msw_irq   : std_ulogic_vector(num_cores_c-1 downto 0);
 
 
-  signal imem_hash_valid : std_ulogic;
+  -- signal imem_hash_valid : std_ulogic;
 
 begin
 
@@ -535,6 +538,7 @@ begin
       NUM_HW_TRIGGERS     => OCD_NUM_HW_TRIGGERS,
 
       INSTRUCTION_SET_RANDOMISATION_EN => INSTRUCTION_SET_RANDOMISATION_EN
+      -- INSTRUCTION_SET_RANDOMISATION_EN => false
     )
     port map (
       -- global control --
@@ -845,7 +849,8 @@ begin
         bus_req_i => imem_req,
         bus_rsp_o => imem_rsp,
         instruction_set_randomisation_key => instruction_set_randomisation_key,
-        hash_valid => imem_hash_valid
+        hash_valid => imem_hash_valid,
+        hash => imem_hash
       );
     end generate;
 

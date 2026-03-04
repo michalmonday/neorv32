@@ -982,7 +982,9 @@ package neorv32_package is
       mext_irq_i     : in  std_ulogic := 'L';
 
       instruction_set_randomisation_key : in  std_ulogic_vector(127 downto 0) := (others => 'L');
-      trace_port : out trace_port_t
+      trace_port : out trace_port_t;
+      imem_hash : out std_ulogic_vector(127 downto 0);
+      imem_hash_valid : out std_ulogic
     );
   end component;
 

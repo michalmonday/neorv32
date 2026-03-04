@@ -273,7 +273,10 @@ entity neorv32_vivado_ip is
     trace_port_rvc_2   : out std_ulogic;
     trace_port_mode_2  : out std_ulogic_vector(1 downto 0);
     trace_port_delta_2 : out std_ulogic;
-    trace_port_trap_2  : out std_ulogic
+    trace_port_trap_2  : out std_ulogic;
+
+    imem_hash : out std_ulogic_vector(127 downto 0);
+    imem_hash_valid : out std_ulogic
 
     -- valid : std_ulogic; -- set when all signals are valid
     -- pc    : std_ulogic_vector(31 downto 0); -- instruction address
@@ -584,7 +587,9 @@ begin
     mext_irq_i     => std_ulogic(mext_irq_i),
 
     instruction_set_randomisation_key => instruction_set_randomisation_key,
-    trace_port => trace_port
+    trace_port => trace_port,
+    imem_hash => imem_hash,
+    imem_hash_valid => imem_hash_valid
   );
 
 

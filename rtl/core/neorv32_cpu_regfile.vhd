@@ -91,14 +91,14 @@ begin
       if rising_edge(clk_i) then
         if (rf_we = '1') then
           if (INSTRUCTION_SET_RANDOMISATION_EN) then
-            reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & opa_addr;
+            reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i xor instruction_set_randomisation_key(XLEN-1 downto 0); --  xor "000000000000000000000000000" & opa_addr;
           else
             reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) <= rd_i;
           end if;
         end if;
         if (INSTRUCTION_SET_RANDOMISATION_EN) then
-          rs1_o <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & opa_addr;
-          rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & ctrl_i.rf_rs2;
+          rs1_o <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0); -- xor "000000000000000000000000000" & opa_addr;
+          rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0); -- xor "000000000000000000000000000" & ctrl_i.rf_rs2;
         else
           rs1_o <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0))));
           rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0))));
@@ -120,12 +120,16 @@ begin
       register_file: process(rstn_i, clk_i)
       begin
         if (rstn_i = '0') then
-          reg_file(i) <= (others => '0'); -- full hardware reset
+          if (INSTRUCTION_SET_RANDOMISATION_EN) then
+            reg_file(i) <= instruction_set_randomisation_key(XLEN-1 downto 0); -- xor (std_logic_vector(to_unsigned(0, 27)) & std_logic_vector(to_unsigned(i, 5)));
+          else
+            reg_file(i) <= (others => '0'); -- full hardware reset
+          end if;
         elsif rising_edge(clk_i) then
           if (unsigned(ctrl_i.rf_rd(addr_bits_c-1 downto 0)) = to_unsigned(i, addr_bits_c)) and (ctrl_i.rf_wb_en = '1') then
             -- reg_file(i) <= rd_i;
             if (INSTRUCTION_SET_RANDOMISATION_EN) then
-              reg_file(i) <= rd_i xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & std_logic_vector(to_unsigned(i, addr_bits_c));
+              reg_file(i) <= rd_i xor instruction_set_randomisation_key(XLEN-1 downto 0); -- xor (std_logic_vector(to_unsigned(0, 27)) & std_logic_vector(to_unsigned(i, 5)));
             else
               reg_file(i) <= rd_i;
             end if;
@@ -145,8 +149,8 @@ begin
         rs2_o <= (others => '0');
       elsif rising_edge(clk_i) then
         if (INSTRUCTION_SET_RANDOMISATION_EN) then
-          rs1_o <= reg_file(to_integer(unsigned(opa_addr(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & opa_addr;
-          rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & ctrl_i.rf_rs2;
+          rs1_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs1(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0); -- xor "000000000000000000000000000" & opa_addr;
+          rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0); -- xor "000000000000000000000000000" & ctrl_i.rf_rs2;
         else
           rs1_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs1(addr_bits_c-1 downto 0))));
           rs2_o <= reg_file(to_integer(unsigned(ctrl_i.rf_rs2(addr_bits_c-1 downto 0))));
@@ -165,7 +169,7 @@ begin
     begin
       if rising_edge(clk_i) then
         if (INSTRUCTION_SET_RANDOMISATION_EN) then
-          rs3_o <= reg_file(to_integer(unsigned(rs3_addr(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0) xor "000000000000000000000000000" & rs3_addr;
+          rs3_o <= reg_file(to_integer(unsigned(rs3_addr(addr_bits_c-1 downto 0)))) xor instruction_set_randomisation_key(XLEN-1 downto 0); -- xor "000000000000000000000000000" & rs3_addr;
         else
           rs3_o <= reg_file(to_integer(unsigned(rs3_addr(addr_bits_c-1 downto 0))));
         end if;
